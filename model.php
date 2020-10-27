@@ -1,5 +1,56 @@
 <?php
 
+    function connectToDB(){
+        include('database.php');
+        $sql = pg_connect('host='.$host.' port='.$port.' dbname='.$dbname.' user='.$login.' password='.$password );
+        return $sql;
+    }
+
+
+    function disconnectFromDB($sql){
+        pg_close($sql);
+    }
+
+
+    function doPreparedSelect($requete, $params){
+
+        $sql=connectToDB();
+        $result=pg_prepare($sql, "prepared_query", $requete);
+        $result = pg_execute($sql, "prepared_query", $params);
+        $row = pg_fetch_all($result);
+        pg_free_result($result);
+        disconnectFromDB($sql);
+        return $row;
+
+    }
+
+
+    function doPreparedRequest($requete, $params){
+
+        $sql=connectToDB();
+        $result=pg_prepare($sql, "prepared_query", $requete);
+        $result = pg_execute($sql, "prepared_query", $params);
+        disconnectFromDB($sql);
+
+    }
+
+
+    function isUser($login, $password){
+
+        $sql=connectToDB();
+        $result=pg_prepare($sql, "prepared_query", 'SELECT * FROM admin.user WHERE login=$1 AND password=$2');
+        $result = pg_execute($sql, "prepared_query", array($login, $password));
+        $rows = pg_fetch_assoc($result);
+        pg_free_result($result);
+        disconnectFromDB($sql);
+
+        if ( $rows != null ) {
+            return $rows;
+        }
+        return null;
+    }
+
+
     function getCurrentPath($URI){
         $PATH = explode("/", $URI);
         $i = 0;
@@ -73,4 +124,5 @@
         }
         return $form;
     }
+
 ?>

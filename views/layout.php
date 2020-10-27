@@ -20,6 +20,16 @@
     <body>
         <header>
             <h1><a href="/<?php echo $ROOT;?>/index.php/main">Géoportail</a></h1>
+            <nav>
+                <ul class="nav__links">
+                    <?php if(!isset($_SESSION['id'])){ ?>
+                        <li><a href="/<?php echo $ROOT;?>/index.php/login">Se connecter</a></li>
+                        <li><a href="/<?php echo $ROOT;?>/index.php/register">S'enregistrer</a></li>
+                    <?php } else { ?>
+                        <li><a href="/<?php echo $ROOT;?>/index.php/logout">Se déconnecter</a></li>
+                    <?php } ?>
+                </ul>
+            </nav>
         </header>
 
         <div class="content">
