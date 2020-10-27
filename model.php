@@ -51,6 +51,31 @@
     }
 
 
+    function insert_user( $nom, $prenom, $login, $password ) {
+        if ( !verification_login ($login)) {
+            return false;
+        } else {
+            $query = 'INSERT INTO admin.user (nom, prenom, login, password) VALUES ( $1, $2, $3, $4 )';
+            $params = [ $nom, $prenom, $login, $password ];
+            doPreparedRequest( $query, $params );
+            return true;
+        }
+    }
+
+    function verification_login($login){
+        $query = "SELECT * FROM admin.user WHERE login=$1";
+        $result = doPreparedSelect($query, array($login));
+        if (is_array($result)) {
+            if (sizeof($result) == 0) {
+                return true;
+            }
+        } else if ($result == null) {
+            return true;
+        }
+        return false;
+    }
+
+
     function getCurrentPath($URI){
         $PATH = explode("/", $URI);
         $i = 0;

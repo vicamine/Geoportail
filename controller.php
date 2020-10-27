@@ -26,6 +26,19 @@
     }
 
 
+    function register_action($nom, $prenom, $login, $password, $URI, $ROOT, $PATH) {
+        if ($nom !=null && $prenom !=null && $login !=null && $password !=null) {
+            $success = insert_user($nom, $prenom, $login, $password);
+            if ($success) {
+                header('Location: /' .$ROOT. '/index.php/main');
+            } else {
+                $error = 'Une erreur est survenue ou le login est déja pris.';
+            }
+        }
+        include('views/register.php');
+    }
+
+
     function logout_action($ROOT) {
         $_SESSION = [];
         session_destroy();

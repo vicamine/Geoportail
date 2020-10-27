@@ -23,6 +23,13 @@
             login_action(null, null, $URI, $ROOT, $PATH);
         }
     }
+    else if ($PATH == 'register') {
+        if (isset($_POST['nom']) && isset($_POST['prenom']) && isset($_POST['login']) && isset($_POST['password'])) {
+            register_action($_POST['nom'], $_POST['prenom'], $_POST['login'], $_POST['password'], $URI, $ROOT, $PATH);
+        } else {
+            register_action(null, null, null, null, $URI, $ROOT, $PATH);
+        }
+    }
     else if(isset($_SESSION['id'])) {
         if($PATH == "addLayer"){
             if (isset($_POST['type'])) {
