@@ -47,9 +47,21 @@
     }
 
 
-    function addLayer_action($type, $URI, $ROOT, $PATH) {
+    function addLayer_action($type, $dataList, $URI, $ROOT, $PATH) {
         if ($type != null) {
             $form = getForm($type, $URI);
+            if ($dataList != null) {
+                $error = create_store_db($dataList);
+                if ($error) {
+                    $error = 'Database added !';
+                    $table = getTable($dataList);
+                    foreach ($table as $value) {
+                        publishLayerDB( $value, $dataList );
+                    }
+                } else {
+                    $error = 'Database not added !';
+                }
+            }
         }
         include('views/addLayer.php');
     }

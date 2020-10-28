@@ -20,6 +20,9 @@
         </div>
     </form>
     <?php if (isset($form)){echo $form;} ?>
+    <?php if(isset($error)){
+        echo "<p class='error'>".$error."</p>";
+    } ?>
 </section>
 
 <?php

@@ -33,9 +33,17 @@
     else if(isset($_SESSION['id'])) {
         if($PATH == "addLayer"){
             if (isset($_POST['type'])) {
-                addLayer_action($_POST['type'], $URI, $ROOT, $PATH);
+                if (isset($_POST['store']) && isset($_POST['description']) && isset($_POST['host']) && isset($_POST['port'])
+                && isset($_POST['database']) && isset($_POST['schema']) && isset($_POST['user']) && isset($_POST['password'])){
+                    $dataList = array('store' => $_POST['store'], 'description' => $_POST['description'], 'host' => $_POST['host'],
+                    'port' => $_POST['port'], 'database' => $_POST['database'], 'schema' => $_POST['schema'],
+                    'user' => $_POST['user'], 'password' => $_POST['password']);
+                    addLayer_action($_POST['type'], $dataList, $URI, $ROOT, $PATH);
+                } else {
+                    addLayer_action($_POST['type'], null, $URI, $ROOT, $PATH);
+                }
             } else {
-                addLayer_action(null, $URI, $ROOT, $PATH);
+                addLayer_action(null, null, $URI, $ROOT, $PATH);
             }
         } else {
             echo "<h1>Error 404 : Page not found.</h1>";
