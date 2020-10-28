@@ -30,6 +30,7 @@
         if ($nom !=null && $prenom !=null && $login !=null && $password !=null) {
             $success = insert_user($nom, $prenom, $login, $password);
             if ($success) {
+                create_workspace($login);
                 header('Location: /' .$ROOT. '/index.php/main');
             } else {
                 $error = 'Une erreur est survenue ou le login est déja pris.';
