@@ -150,4 +150,28 @@
         return $form;
     }
 
+
+    function create_workspace($login) {
+        $url = "http://localhost:8080/geoserver/rest/workspaces"; // your address can change depending upon the configuration of the geoserver
+        $ch = curl_init( $url );
+
+        // Setup request to send json via POST.
+        $payload = json_encode( array( "workspace"=> array('name' => $login) ) ); //supply json as payload
+        curl_setopt($ch, CURLOPT_POST, True);
+        curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver'); //credentials (user:password)
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        // Return response instead of printing.
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        // Send request.
+        $result = curl_exec($ch);
+        curl_close($ch);
+        // Print response.
+        echo "<pre>$result</pre>";
+    }
+
+
+
+
+
 ?>
