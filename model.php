@@ -147,6 +147,14 @@
             </form>';
         }
         elseif ($type =='shapefile') {
+            $form = '<form action="upload" method="post" enctype="multipart/form-data">
+            	<p> Select zip to upload: </p>
+            	<input type="file" name="fileToUpload" id="fileToUpload">
+            	<!-- <input type="file" name="files[]" id="files[]"> -->
+            	<input type="submit" value="Upload zip" name="submit">
+            </form>';
+        }
+        else {
             $form = null;
         }
         return $form;
