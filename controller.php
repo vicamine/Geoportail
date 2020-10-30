@@ -26,12 +26,16 @@
     }
 
 
-    function register_action($nom, $prenom, $login, $password, $URI, $ROOT, $PATH) {
-        if ($nom !=null && $prenom !=null && $login !=null && $password !=null) {
-            $success = insert_user($nom, $prenom, $login, $password);
+    function register_action($nom, $prenom, $login, $passwd, $URI, $ROOT, $PATH) {
+        if ($nom !=null && $prenom !=null && $login !=null && $passwd !=null) {
+            $success = insert_user($nom, $prenom, $login, $passwd);
             if ($success) {
                 create_workspace($login);
-                header('Location: /' .$ROOT. '/index.php/main');
+                include('database.php');
+                $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
+                    'store' => $login, 'description' => 'Geoserver Database', 'schema' => $login, 'login' => $login);
+                create_store_db($login, $dataList);
+                header('Location: /' .$ROOT. '/index.php/login');
             } else {
                 $error = 'Une erreur est survenue ou le login est déja pris.';
             }
@@ -52,15 +56,38 @@
             $form = getForm($type, $URI);
             if ($type == 'postgis') {
                 if ($dataList != null) {
-                    $error = create_store_db($dataList);
+                    $login = $_SESSION['login'];
+                    $error = create_store_db($login, $dataList);
                     if ($error) {
-                        $error = 'Database added !';
+                        echo "<script>alert(\"Base de donnée ajouté !\")</script>";
                         $table = getTable($dataList);
+                        $dataList['login'] = $_SESSION['login'];
                         foreach ($table as $value) {
                             publishLayerDB( $value, $dataList );
                         }
+                        $error = '';
                     } else {
                         $error = 'Database not added !';
+                    }
+                }
+            }
+            else {
+                if ($type == 'shapefile') {
+                    if (isset($dataList['error'])) {
+                        if (!$dataList['error']) {
+                            echo "<script>alert(\"Layers ajoutées !\")</script>";
+                            $error = '';
+                            include('database.php');
+                            $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
+                                'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
+                            $table = getTable($dataList);
+                            foreach ($table as $value) {
+                                publishLayerDB( $value, $dataList );
+                            }
+                        }
+                        else {
+                            $error = 'Layers not added or partially !';
+                        }
                     }
                 }
             }

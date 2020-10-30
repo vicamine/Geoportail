@@ -53,7 +53,12 @@
                 else if ( $_POST['type'] == 'shapefile' ) {
                     addLayer_action($_POST['type'], null, $URI, $ROOT, $PATH);
                 }
-            } else {
+            }
+            else if ( isset($_GET['type']) && isset($_GET['error'])) {
+                $dataList['error'] = $_GET['error'];
+                addLayer_action($_GET['type'], $dataList, $URI, $ROOT, $PATH);
+            }
+            else {
                 addLayer_action(null, null, $URI, $ROOT, $PATH);
             }
         } else {

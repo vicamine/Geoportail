@@ -2,7 +2,7 @@
 
     function connectToDB(){
         include('database.php');
-        $sql = pg_connect('host='.$host.' port='.$port.' dbname='.$dbname.' user='.$login.' password='.$password );
+        $sql = pg_connect('host='.$host.' port='.$port.' dbname='.$dbname.' user='.$user.' password='.$password );
         return $sql;
     }
 
@@ -180,11 +180,11 @@
     }
 
 
-    function create_store_db($dataList){
+    function create_store_db($login, $dataList){
         $payload = array('dataStore' => array('name' => $dataList['store'], //name of the datastore
                                       'description' => $dataList['description'],
                                       'enabled' => true,
-                                      'workspace' => array('name' => $_SESSION['login'], 'link' => 'http://'.$_SESSION['login']), //workspace information ,link is namespace URI
+                                      'workspace' => array('name' => $login, 'link' => 'http://'.$login), //workspace information ,link is namespace URI
                                       'connectionParameters' => array('host' => $dataList['host'], //DB connection information
                                                                       'port' => $dataList['port'],
                                                                       'database' => $dataList['database'],
@@ -198,7 +198,7 @@
                                       )
                   );
         // echo(json_encode($payload)); die();
-        $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/datastores";// your address can change depending upon the configuration of the geoserver
+        $url = "http://localhost:8080/geoserver/rest/workspaces/".$login."/datastores";// your address can change depending upon the configuration of the geoserver
         $ch = curl_init( $url );
 
         # Setup request to send json via POST.
@@ -244,7 +244,7 @@
       function publishLayerDB( $layerName, $dataList ) {
         $payload = array('featureType' => array( 'name' => $layerName ));
       	// echo(json_encode($payload)); die();
-      	$url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/datastores/".$dataList['store']."/featuretypes";// your address can change depending upon the configuration of the geoserver
+      	$url = "http://localhost:8080/geoserver/rest/workspaces/".$dataList['login']."/datastores/".$dataList['store']."/featuretypes";// your address can change depending upon the configuration of the geoserver
       	$ch = curl_init( $url );
 
       	# Setup request to send json via POST.
