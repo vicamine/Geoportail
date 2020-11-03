@@ -67,6 +67,9 @@
     $shpName = glob($target_dir."*.shp");
     foreach ($shpName as $value) {
         $tblname = strtolower(pathinfo($value)['filename']);
+        $tblname = str_replace(' ', '_',$tblname);
+        $tblname = str_replace('-', '_',$tblname);
+        $tblname = str_replace('.', '_',$tblname);
         $tblname = $_SESSION['login'].'.'.$tblname;
         //echo $tblname;
         $file = basename( $value );

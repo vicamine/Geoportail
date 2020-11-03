@@ -95,4 +95,13 @@
         include('views/addLayer.php');
     }
 
+
+    function user_action($action, $data, $URI, $ROOT, $PATH ) {
+        if ($action == 'Supprimer') {
+            geoDelete($data);
+            deleteLayer($data);
+        }
+        include('views/user.php');
+    }
+
 ?>
