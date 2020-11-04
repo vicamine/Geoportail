@@ -16,7 +16,6 @@
             if ($user != null) {
                 $_SESSION['id'] = $user['userid'];
                 $_SESSION['login'] = $user['login'];
-                //echo $_SESSION['id'];
                 header("Location: /" . $ROOT . "/index.php/main");
             } else {
                 $error = "Nom d'utilisateur ou mot de passe incorrecte.";
@@ -86,6 +85,13 @@
                             }
                         }
                         else {
+                            include('database.php');
+                            $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
+                                'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
+                            $table = getTable($dataList);
+                            foreach ($table as $value) {
+                                publishLayerDB( $value, $dataList );
+                            }
                             $error = 'Layers not added or partially !';
                         }
                     }
