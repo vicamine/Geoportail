@@ -12,7 +12,7 @@
 
         if($login != null && $password != null) {
             $user = isUser($login, $password);
-            echo $user;
+            //echo $user;
             if ($user != null) {
                 $_SESSION['id'] = $user['userid'];
                 $_SESSION['login'] = $user['login'];
@@ -81,7 +81,7 @@
                                 'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
                             $table = getTable($dataList);
                             foreach ($table as $value) {
-                                publishLayerDB( $value, $dataList );
+                                $error = publishLayerDB( $value, $dataList );
                             }
                         }
                         else {
@@ -99,6 +99,15 @@
             }
         }
         include('views/addLayer.php');
+    }
+
+
+    function user_action($action, $data, $URI, $ROOT, $PATH ) {
+        if ($action == 'Supprimer') {
+            deleteLayer($data);
+            geoDelete($data);
+        }
+        include('views/user.php');
     }
 
 ?>

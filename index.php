@@ -61,7 +61,16 @@
             else {
                 addLayer_action(null, null, $URI, $ROOT, $PATH);
             }
-        } else {
+        }
+        else if ($PATH == 'user') {
+            if ( isset($_POST['supprimer']) && isset($_POST['layer']) ) {
+                user_action($_POST['supprimer'], $_POST['layer'] , $URI, $ROOT, $PATH );
+            }
+            else {
+                user_action(null, null, $URI, $ROOT, $PATH);
+            }
+        }
+        else {
             echo "<h1>Error 404 : Page not found.</h1>";
         }
     }

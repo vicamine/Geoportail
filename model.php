@@ -238,28 +238,51 @@
         pg_close($dbconn);
 
         return $res;
-      }
+    }
 
 
-      function publishLayerDB( $layerName, $dataList ) {
+    function publishLayerDB( $layerName, $dataList ) {
         $payload = array('featureType' => array( 'name' => $layerName ));
-      	// echo(json_encode($payload)); die();
-      	$url = "http://localhost:8080/geoserver/rest/workspaces/".$dataList['login']."/datastores/".$dataList['store']."/featuretypes";// your address can change depending upon the configuration of the geoserver
-      	$ch = curl_init( $url );
+        // echo(json_encode($payload)); die();
+        $url = "http://localhost:8080/geoserver/rest/workspaces/".$dataList['login']."/datastores/".$dataList['store']."/featuretypes";// your address can change depending upon the configuration of the geoserver
+        $ch = curl_init( $url );
 
-      	# Setup request to send json via POST.
-      	curl_setopt($ch, CURLOPT_POST, True);
-      	curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
-      	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($payload)); //supply json as payload
+        # Setup request to send json via POST.
+        curl_setopt($ch, CURLOPT_POST, True);
+        curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($payload)); //supply json as payload
 
-      	curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-      	# Return response instead of printing.
-      	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-      	# Send request.
-      	$result = curl_exec($ch);
-      	curl_close($ch);
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        # Return response instead of printing.
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        # Send request.
+        $result = curl_exec($ch);
+        curl_close($ch);
         return $result;
-      }
+    }
 
+
+    function geoDelete($layerList) {
+        foreach ($layerList as $layer) {
+            $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/datastores/".$_SESSION['login']."/featuretypes/".str_replace($_SESSION['login'].':', '', $layer)."?recurse=true";
+            $ch = curl_init( $url );
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+            curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
+            //curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: application/atom+xml"));
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
+            curl_exec($ch);
+            curl_close($ch);
+        }
+    }
+
+
+    function deleteLayer($layerList) {
+        foreach ( $layerList as $layer) {
+            $sql = connectToDB();
+            $query = 'DROP TABLE '.$_SESSION['login'].'.'.str_replace($_SESSION['login'].':', '', $layer).' CASCADE';
+            $result = pg_query($query);
+            disconnectFromDB($sql);
+        }
+    }
 
 ?>

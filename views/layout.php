@@ -26,6 +26,7 @@
                         <li><a href="/<?php echo $ROOT;?>/index.php/login">Se connecter</a></li>
                         <li><a href="/<?php echo $ROOT;?>/index.php/register">S'enregistrer</a></li>
                     <?php } else { ?>
+                        <li><a href="/<?php echo $ROOT;?>/index.php/user"><?php echo $_SESSION['login'] ?></a></li>
                         <li><a href="/<?php echo $ROOT;?>/index.php/logout">Se déconnecter</a></li>
                     <?php } ?>
                 </ul>
