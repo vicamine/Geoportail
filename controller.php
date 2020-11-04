@@ -12,11 +12,11 @@
 
         if($login != null && $password != null) {
             $user = isUser($login, $password);
-            echo $user;
+            //echo $user;
             if ($user != null) {
                 $_SESSION['id'] = $user['userid'];
                 $_SESSION['login'] = $user['login'];
-                echo $_SESSION['id'];
+                //echo $_SESSION['id'];
                 header("Location: /" . $ROOT . "/index.php/main");
             } else {
                 $error = "Nom d'utilisateur ou mot de passe incorrecte.";
@@ -82,7 +82,7 @@
                                 'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
                             $table = getTable($dataList);
                             foreach ($table as $value) {
-                                publishLayerDB( $value, $dataList );
+                                $error = publishLayerDB( $value, $dataList );
                             }
                         }
                         else {
@@ -98,8 +98,8 @@
 
     function user_action($action, $data, $URI, $ROOT, $PATH ) {
         if ($action == 'Supprimer') {
-            geoDelete($data);
             deleteLayer($data);
+            geoDelete($data);
         }
         include('views/user.php');
     }

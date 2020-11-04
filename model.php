@@ -264,11 +264,11 @@
 
     function geoDelete($layerList) {
         foreach ($layerList as $layer) {
-            $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/layers/".str_replace($_SESSION['login'].':', '', $layer);
+            $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/datastores/".$_SESSION['login']."/featuretypes/".str_replace($_SESSION['login'].':', '', $layer)."?recurse=true";
             $ch = curl_init( $url );
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
             curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: application/atom+xml"));
+            //curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: application/atom+xml"));
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
             curl_exec($ch);
             curl_close($ch);
@@ -282,7 +282,6 @@
             $query = 'DROP TABLE '.$_SESSION['login'].'.'.str_replace($_SESSION['login'].':', '', $layer).' CASCADE';
             $result = pg_query($query);
             disconnectFromDB($sql);
-            $res = array();
         }
     }
 
