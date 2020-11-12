@@ -52,31 +52,75 @@ function capabilities() {
             //document.getElementById("contenue").innerHTML = xhttp.responseText;
             var xmlData = xhttp.responseXML;
             var x = xmlData.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
+            var workspaceList = [];
+
+            if (x.length > 0) {
+                var menu = document.createElement('ul');
+                menu.setAttribute('id', 'menu');
+                document.querySelector('#contenue').append(menu);
+            }
 
             for (i = 0; i < x.length; i++) {
-                var layer = document.createElement('p');
-                var bouton = document.createElement('input');
-                var styles = x[i].getElementsByTagName('Style');
-                bouton.type = 'button';
-                bouton.value = 'unselected';
-
                 if ( x[i].getElementsByTagName('Name')[0].innerHTML.indexOf(':') == -1 ) {
-                    layer.innerHTML = 'Group of layer | ';
+                    if ( workspaceList.indexOf('Group of layer' ) == -1) {
+                        workspaceList.push('Group of layer');
+                        var workspace = document.createElement('li');
+                        workspace.innerHTML = 'Group of layer';
+                        workspace.setAttribute('class', 'level1');
+                        var sousMenu = document.createElement('ul');
+                        sousMenu.setAttribute('class', 'sousMenu');
+                        sousMenu.setAttribute('id', 'groupLayer');
+                        workspace.append(sousMenu);
+                        document.querySelector('#menu').append(workspace);
+                    }
                 } else {
-                    layer.innerHTML = 'Layer | ';
+                    var workspaceName = x[i].getElementsByTagName('Name')[0].innerHTML.substr(0, x[i].getElementsByTagName('Name')[0].innerHTML.indexOf(':'));
+                    if ( workspaceList.indexOf(workspaceName) == -1 ) {
+                        workspaceList.push(workspaceName);
+                        var workspace = document.createElement('li');
+                        workspace.innerHTML = workspaceName;
+                        workspace.setAttribute('class', 'level1');
+                        var sousMenu = document.createElement('ul');
+                        sousMenu.setAttribute('class', 'sousMenu');
+                        sousMenu.setAttribute('id', workspaceName);
+                        workspace.append(sousMenu);
+                        document.querySelector('#menu').append(workspace);
+                    }
                 }
+            }
 
-                layer.innerHTML += x[i].getElementsByTagName('Name')[0].innerHTML + ' | ' +
+            for (i = 0; i < x.length; i++) {
+
+                var layer = document.createElement('li');
+                var link = document.createElement('a');
+                var name = x[i].getElementsByTagName('Name')[0].innerHTML;
+                var js = "addLay(\""+name+"\")";
+                link.innerHTML = 'bouton';
+                link.setAttribute('href', "javascript:void(0);");
+                link.setAttribute('ondblclick', js);
+                //var bouton = document.createElement('input');
+                var styles = x[i].getElementsByTagName('Style');
+                var wsName = name.substr(0, name.indexOf(':'));
+                //bouton.type = 'button';
+                //bouton.value = 'unselected';
+
+                layer.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
                 x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
 
                 for ( elem of styles) {
                     layer.innerHTML += elem.getElementsByTagName('Name')[0].innerHTML + ' ';
                 }
 
-                bouton.setAttribute( 'onclick', 'afficher_layer(this);' );
-                bouton.setAttribute( 'name', x[i].getElementsByTagName('Name')[0].innerHTML);
-                layer.append( bouton );
-                document.querySelector('#contenue').append(layer);
+                //bouton.setAttribute( 'onclick', 'afficher_layer(this);' );
+                //bouton.setAttribute( 'name', x[i].getElementsByTagName('Name')[0].innerHTML);
+                //layer.append( bouton );
+                layer.append(link);
+
+                if ( wsName == '' ) {
+                    document.querySelector('#groupLayer').append(layer);
+                } else {
+                    document.querySelector('#'+wsName).append(layer);
+                }
             }
         }
     };
@@ -110,6 +154,11 @@ function addLay ( layername ) {
         })
     }));
     layers.push(layer);
+
+    var active = document.createElement('li');
+    active.innerHTML = layername;
+    active.setAttribute('id', layername);
+    document.querySelector('#active ul').append(active);
 }
 
 
