@@ -11,9 +11,16 @@
 <h2> Features </h2>
 <div id='features'> </div>
 <h2> Capabilites </h2>
-<p> Layer type | Layer name | Base projection | Style(s) </p>
-<p><====================================================></p>
+
 <div id='contenue'> </div>
+
+<h2> Layer active </h2>
+
+<div id='active'>
+    <ul>
+
+    </ul>
+</div>
 
 <br/>
 
