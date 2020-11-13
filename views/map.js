@@ -45,13 +45,17 @@ function initMap () {
 
 
 function capabilities() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            // Typical action to be performed when the document is ready:
-            //document.getElementById("contenue").innerHTML = xhttp.responseText;
-            var xmlData = xhttp.responseXML;
-            var x = xmlData.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
+
+    $.ajax({
+        url: '../getCapabilities.php',
+        type: 'GET',
+        data: {
+            url: 'http://localhost:8080/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities',
+            request: 'capabilities'
+        },
+        dataType: 'xml',
+        success: function(res) {
+            var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
             var workspaceList = [];
 
             if (x.length > 0) {
@@ -131,11 +135,7 @@ function capabilities() {
                 }
             }
         }
-    };
-
-    xhttp.open("GET", "http://localhost:8080/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities", true);
-    xhttp.overrideMimeType('text/xml');
-    xhttp.send();
+    });
 }
 
 
