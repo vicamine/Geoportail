@@ -95,21 +95,29 @@ function capabilities() {
                 var link = document.createElement('a');
                 var name = x[i].getElementsByTagName('Name')[0].innerHTML;
                 var js = "addLay(\""+name+"\")";
-                link.innerHTML = 'bouton';
                 link.setAttribute('href', "javascript:void(0);");
                 link.setAttribute('ondblclick', js);
+                layer.setAttribute('id', name.replace(':', '__')+'Layer');
                 //var bouton = document.createElement('input');
                 var styles = x[i].getElementsByTagName('Style');
                 var wsName = name.substr(0, name.indexOf(':'));
                 //bouton.type = 'button';
                 //bouton.value = 'unselected';
 
-                layer.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
+                link.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
                 x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
 
+                var str = '';
                 for ( elem of styles) {
-                    layer.innerHTML += elem.getElementsByTagName('Name')[0].innerHTML + ' ';
+                    link.innerHTML += elem.getElementsByTagName('Name')[0].innerHTML + ' ';
+                    if (str == '') {
+                        str += elem.getElementsByTagName('Name')[0].innerHTML;
+                    } else {
+                        str += ',' + elem.getElementsByTagName('Name')[0].innerHTML;
+                    }
                 }
+                str += '';
+                layer.setAttribute('styles', str);
 
                 //bouton.setAttribute( 'onclick', 'afficher_layer(this);' );
                 //bouton.setAttribute( 'name', x[i].getElementsByTagName('Name')[0].innerHTML);
@@ -157,7 +165,42 @@ function addLay ( layername ) {
 
     var active = document.createElement('li');
     active.innerHTML = layername;
-    active.setAttribute('id', layername);
+    active.setAttribute('id', layername.replace(':', '__'));
+
+    var slider = document.createElement('input');
+    slider.type = 'range';
+    slider.min = 1;
+    slider.max = 100;
+    slider.value = 50
+    slider.setAttribute('class', 'slider');
+    slider.setAttribute('id', layername.replace(':', '__')+'Slider');
+    active.append(slider);
+
+    var styles = document.querySelector('#'+layername.replace(':', '__')+'Layer').getAttribute('styles');
+    styles = styles.split(',');
+
+    var select = document.createElement('select');
+    select.name = 'styles';
+    select.setAttribute('id', layername.replace(':', '__')+'Select');
+
+    for (elem of styles ) {
+        var option = document.createElement('option');
+        option.value = elem;
+        option.innerHTML = elem;
+        select.append(option);
+    }
+
+    active.append(select);
+
+    var js = "removeLay(\""+layername+"\")";
+    var bouton = document.createElement('input');
+    bouton.setAttribute('id', layername.replace(':', '__')+'Delete');
+    bouton.setAttribute('name', layername);
+    bouton.type = 'button';
+    bouton.value = 'delete';
+    bouton.setAttribute( 'onclick', js );
+    active.append(bouton);
+
     document.querySelector('#active ul').append(active);
 }
 
@@ -168,6 +211,9 @@ function removeLay ( layername ) {
         if (layer != null) {
             if ( layer.get('name') != undefined & layer.get('name') == layername ) {
                 map.removeLayer(layer);
+
+                del = document.querySelector('#'+layername.replace(':', '__'));
+                del.remove();
 
                 layers.forEach(function (elem, index) {
                     if ( elem.get('name') == layer.get('name')) {
