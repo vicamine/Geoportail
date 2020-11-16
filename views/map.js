@@ -98,7 +98,7 @@ function capabilities() {
                 var layer = document.createElement('li');
                 var link = document.createElement('a');
                 var name = x[i].getElementsByTagName('Name')[0].innerHTML;
-                var js = "addLay(\""+name+"\")";
+                var js = "addLay(\""+name+"\", \"\")";
                 link.setAttribute('href', "javascript:void(0);");
                 link.setAttribute('ondblclick', js);
                 layer.setAttribute('id', 'z'+name.replace(':', '__')+'Layer');
@@ -136,28 +136,31 @@ function capabilities() {
 }
 
 
-function afficher_layer(bouton) {
-    if ( bouton.value == 'unselected' ) {
-        bouton.value = 'selected';
-        addLay (bouton.getAttribute('name'));
-    } else {
-        bouton.value = 'unselected';
-        removeLay(bouton.getAttribute('name'));
-    }
-}
-
-
-function addLay ( layername ) {
+function addLay ( layername, style ) {
     var layer;
-    map.addLayer( layer = new ol.layer.Image ({
-        visible: true,
-        name: layername,
-        source: new ol.source.ImageWMS({
-            url: '../getMap.php',
-            params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?'},
-            serverType: 'geoserver',
-        })
-    }));
+    if ( style == "" ) {
+        map.addLayer( layer = new ol.layer.Image ({
+            visible: true,
+            name: layername,
+            source: new ol.source.ImageWMS({
+                url: '../getMap.php',
+                params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?'},
+                serverType: 'geoserver',
+            })
+        }));
+    }
+    else {
+        map.addLayer( layer = new ol.layer.Image ({
+            visible: true,
+            name: layername,
+            source: new ol.source.ImageWMS({
+                url: '../getMap.php',
+                params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?', 'STYLES': style},
+                serverType: 'geoserver',
+            })
+        }));
+    }
+
     layers.push(layer);
 
     var active = document.createElement('li');
@@ -179,11 +182,16 @@ function addLay ( layername ) {
     var select = document.createElement('select');
     select.name = 'styles';
     select.setAttribute('id', layername.replace(':', '__')+'Select');
+    var js = "styleChange(this.value, \""+layername+"\")";
+    select.setAttribute('onchange', js);
 
     for (elem of styles ) {
         var option = document.createElement('option');
         option.value = elem;
         option.innerHTML = elem;
+        if (elem == style) {
+            option.selected = 'selected';
+        }
         select.append(option);
     }
 
@@ -208,6 +216,7 @@ function removeLay ( layername ) {
         if (layer != null) {
             if ( layer.get('name') != undefined & layer.get('name') == layername ) {
                 map.removeLayer(layer);
+                document.getElementById('features').innerHTML = '';
 
                 del = document.querySelector('#'+'z'+layername.replace(':', '__'));
                 del.remove();
@@ -222,4 +231,9 @@ function removeLay ( layername ) {
             }
         }
     });
+}
+
+function styleChange( style, layername ) {
+    removeLay(layername);
+    addLay(layername, style);
 }
