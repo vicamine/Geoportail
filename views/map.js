@@ -102,11 +102,8 @@ function capabilities() {
                 link.setAttribute('href', "javascript:void(0);");
                 link.setAttribute('ondblclick', js);
                 layer.setAttribute('id', 'z'+name.replace(':', '__')+'Layer');
-                //var bouton = document.createElement('input');
                 var styles = x[i].getElementsByTagName('Style');
                 var wsName = name.substr(0, name.indexOf(':'));
-                //bouton.type = 'button';
-                //bouton.value = 'unselected';
                 if (x[i].getElementsByTagName('SRS').length > 0) {
                     link.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
                     x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
@@ -126,10 +123,6 @@ function capabilities() {
                 }
                 str += '';
                 layer.setAttribute('styles', str);
-
-                //bouton.setAttribute( 'onclick', 'afficher_layer(this);' );
-                //bouton.setAttribute( 'name', x[i].getElementsByTagName('Name')[0].innerHTML);
-                //layer.append( bouton );
                 layer.append(link);
 
                 if ( wsName == '' ) {
