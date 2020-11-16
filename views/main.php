@@ -10,9 +10,6 @@
 
 <h2> Features </h2>
 <div id='features'> </div>
-<h2> Capabilites </h2>
-
-<div id='contenue'> </div>
 
 <h2> Layer active </h2>
 
@@ -21,6 +18,11 @@
 
     </ul>
 </div>
+
+<h2> Capabilites </h2>
+
+<div id='contenue'> </div>
+
 
 <br/>
 

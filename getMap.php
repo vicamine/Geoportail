@@ -1,9 +1,13 @@
 <?php
-    if (isset($_GET['url'])) {
-        header('Content-type: image/png');
-        $image = imagecreatefrompng($_GET['url']);
-        $background = imagecolorallocate($image , 255, 255, 255);
-        imagecolortransparent($image, $background);
-        $image = imagepng($image);
+    if (isset($_GET['DOMAIN']) && isset($_GET['REQUEST'])) {
+        if ($_GET['REQUEST'] == 'GetMap') {
+            $url = explode('?', basename($_SERVER['REQUEST_URI']))[1];
+            $url = $_GET['DOMAIN'].$url;
+            $image = imagecreatefrompng($url);
+            imagealphablending($image, false);
+            imagesavealpha($image, true);
+            header('Content-type: image/png');
+            imagepng($image);
+        }
     }
 ?>
