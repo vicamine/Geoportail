@@ -45,13 +45,17 @@ function initMap () {
 
 
 function capabilities() {
-    var xhttp = new XMLHttpRequest();
-    xhttp.onreadystatechange = function() {
-        if (this.readyState == 4 && this.status == 200) {
-            // Typical action to be performed when the document is ready:
-            //document.getElementById("contenue").innerHTML = xhttp.responseText;
-            var xmlData = xhttp.responseXML;
-            var x = xmlData.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
+
+    $.ajax({
+        url: '../getCapabilities.php',
+        type: 'GET',
+        data: {
+            url: 'http://localhost:8080/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities',
+            request: 'capabilities'
+        },
+        dataType: 'xml',
+        success: function(res) {
+            var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
             var workspaceList = [];
 
             if (x.length > 0) {
@@ -97,15 +101,16 @@ function capabilities() {
                 var js = "addLay(\""+name+"\")";
                 link.setAttribute('href', "javascript:void(0);");
                 link.setAttribute('ondblclick', js);
-                layer.setAttribute('id', name.replace(':', '__')+'Layer');
-                //var bouton = document.createElement('input');
+                layer.setAttribute('id', 'z'+name.replace(':', '__')+'Layer');
                 var styles = x[i].getElementsByTagName('Style');
                 var wsName = name.substr(0, name.indexOf(':'));
-                //bouton.type = 'button';
-                //bouton.value = 'unselected';
-
-                link.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
-                x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
+                if (x[i].getElementsByTagName('SRS').length > 0) {
+                    link.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
+                    x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
+                } else {
+                    link.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
+                    x[i].getElementsByTagName('CRS')[0].innerHTML + ' | ';
+                }
 
                 var str = '';
                 for ( elem of styles) {
@@ -118,10 +123,6 @@ function capabilities() {
                 }
                 str += '';
                 layer.setAttribute('styles', str);
-
-                //bouton.setAttribute( 'onclick', 'afficher_layer(this);' );
-                //bouton.setAttribute( 'name', x[i].getElementsByTagName('Name')[0].innerHTML);
-                //layer.append( bouton );
                 layer.append(link);
 
                 if ( wsName == '' ) {
@@ -131,11 +132,7 @@ function capabilities() {
                 }
             }
         }
-    };
-
-    xhttp.open("GET", "http://localhost:8080/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities", true);
-    xhttp.overrideMimeType('text/xml');
-    xhttp.send();
+    });
 }
 
 
@@ -156,8 +153,8 @@ function addLay ( layername ) {
         visible: true,
         name: layername,
         source: new ol.source.ImageWMS({
-            url: 'http://localhost:8080/geoserver/wms?service=wms',
-            params: {'LAYERS': layername, 'TILED': true},
+            url: '../getMap.php',
+            params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?'},
             serverType: 'geoserver',
         })
     }));
@@ -165,7 +162,7 @@ function addLay ( layername ) {
 
     var active = document.createElement('li');
     active.innerHTML = layername;
-    active.setAttribute('id', layername.replace(':', '__'));
+    active.setAttribute('id', 'z'+layername.replace(':', '__'));
 
     var slider = document.createElement('input');
     slider.type = 'range';
@@ -176,7 +173,7 @@ function addLay ( layername ) {
     slider.setAttribute('id', layername.replace(':', '__')+'Slider');
     active.append(slider);
 
-    var styles = document.querySelector('#'+layername.replace(':', '__')+'Layer').getAttribute('styles');
+    var styles = document.querySelector('#'+'z'+layername.replace(':', '__')+'Layer').getAttribute('styles');
     styles = styles.split(',');
 
     var select = document.createElement('select');
@@ -212,7 +209,7 @@ function removeLay ( layername ) {
             if ( layer.get('name') != undefined & layer.get('name') == layername ) {
                 map.removeLayer(layer);
 
-                del = document.querySelector('#'+layername.replace(':', '__'));
+                del = document.querySelector('#'+'z'+layername.replace(':', '__'));
                 del.remove();
 
                 layers.forEach(function (elem, index) {
