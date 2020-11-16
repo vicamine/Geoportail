@@ -169,11 +169,14 @@ function addLay ( layername, style ) {
 
     var slider = document.createElement('input');
     slider.type = 'range';
-    slider.min = 1;
-    slider.max = 100;
-    slider.value = 50
+    slider.min = 0;
+    slider.max = 1;
+    slider.step = 0.01;
+    slider.value = 0.5;
     slider.setAttribute('class', 'slider');
     slider.setAttribute('id', layername.replace(':', '__')+'Slider');
+    var js = "opacityChange(this.value, \""+layername+"\")";
+    slider.setAttribute('onchange', js);
     active.append(slider);
 
     var styles = document.querySelector('#'+'z'+layername.replace(':', '__')+'Layer').getAttribute('styles');
@@ -182,8 +185,8 @@ function addLay ( layername, style ) {
     var select = document.createElement('select');
     select.name = 'styles';
     select.setAttribute('id', layername.replace(':', '__')+'Select');
-    var js = "styleChange(this.value, \""+layername+"\")";
-    select.setAttribute('onchange', js);
+    var js2 = "styleChange(this.value, \""+layername+"\")";
+    select.setAttribute('onchange', js2);
 
     for (elem of styles ) {
         var option = document.createElement('option');
@@ -233,7 +236,19 @@ function removeLay ( layername ) {
     });
 }
 
+
 function styleChange( style, layername ) {
     removeLay(layername);
     addLay(layername, style);
+}
+
+
+function opacityChange( opacity, layername ) {
+    map.getLayers().forEach(function (layer) {
+        if (layer != null) {
+            if ( layer.get('name') != undefined & layer.get('name') == layername ) {
+                layer.setOpacity(parseFloat(opacity));
+            }
+        }
+    });
 }
