@@ -10,20 +10,24 @@
     $COMPLETE_PATH = getCompletePath($URI);
 
 
-
-    if ($PATH == "logout") {
+    if ($COMPLETE_PATH[0] == 'ows') {
+        if ( isset($_GET['request'])){
+                API_action( $_GET['request'], $_SERVER['REQUEST_URI'] );
+        }
+        else if ( isset($_GET['REQUEST']) ) {
+                API_action( $_GET['REQUEST'], $_SERVER['REQUEST_URI']  );
+        }
+    }
+    else if ($PATH == "logout") {
         logout_action($ROOT);
     }
-
-    if ($PATH == 'uploadShape') {
+    else if ($PATH == 'uploadShape') {
         include 'uploadShape.php';
     }
-
-    if ($PATH == 'uploadStyle') {
+    else if ($PATH == 'uploadStyle') {
         include 'uploadStyle.php';
     }
-
-    if ($PATH == 'main') {
+    else if ($PATH == 'main') {
         main_action( $ROOT, $PATH );
     }
     else if ($PATH == 'login') {
