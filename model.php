@@ -299,7 +299,7 @@
         $styleName = explode('.', $fileName)[0];
         $url = "http://localhost:8080/geoserver/rest/styles";
         $ch = curl_init( $url );
-        $POST_DATA = "<style><name>".$styleName."</name><filename>".$fileName."</filename></style>";
+        $POST_DATA = "<style><name>".$_SESSION['login'].'_'.$styleName."</name><filename>".$fileName."</filename></style>";
         curl_setopt($ch, CURLOPT_POST, True);
         curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
         curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: text/xml"));
@@ -309,7 +309,7 @@
         curl_close($ch);
 
         $POST_DATA = fopen($filePath, 'rb');
-        $url = "http://localhost:8080/geoserver/rest/styles/".$styleName;
+        $url = "http://localhost:8080/geoserver/rest/styles/".$_SESSION['login'].'_'.$styleName;
         $ch = curl_init( $url );
         curl_setopt($ch, CURLOPT_PUT, true);
         curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
@@ -335,6 +335,19 @@
             rmdir($path);
         }
     	return;
+    }
+
+
+    function deleteStyle($styleList) {
+        foreach ($styleList as $style) {
+            $url = "http://localhost:8080/geoserver/rest/styles/".$style."?purge=true";
+            $ch = curl_init( $url );
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+            curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
+            curl_exec($ch);
+            curl_close($ch);
+        }
     }
 
 ?>

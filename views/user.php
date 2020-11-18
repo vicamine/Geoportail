@@ -20,7 +20,14 @@
 
 <h2> Gestion des Styles </h2>
 
-<div class="styles"> </div>
+<div class="styles">
+
+    <form class='formulaireStyle' action="<?php echo $URI; ?>" method="post">
+        <input type="submit" name="supprimerStyle" value="Supprimer">
+        <br><br>
+    </form>
+
+</div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
@@ -80,7 +87,38 @@
         });
     }
 
+
+    function styles () {
+        $.ajax({
+            url: 'http://localhost:8080/geoserver/rest/styles.xml',
+            type: 'GET',
+            dataType: 'xml',
+            success: function(res) {
+                var x = res.getElementsByTagName("name");
+                for (i = 0; i < x.length; i++) {
+                    var name = x[i].innerHTML;
+                    if ( name.split('_')[0] == "<?php echo $_SESSION['login']; ?>" ) {
+                        var style = document.createElement('input');
+                        var styleLabel = document.createElement('label');
+                        styleLabel.innerHTML = name;
+                        styleLabel.setAttribute('for', name);
+                        style.type = 'checkbox';
+                        style.name = 'style[]';
+                        style.value = name;
+                        style.setAttribute('id', name);
+                        document.querySelector('.formulaireStyle').append(style);
+                        document.querySelector('.formulaireStyle').append(styleLabel);
+                        document.querySelector('.formulaireStyle').append(document.createElement('br'));
+                    }
+                }
+            }
+        });
+    }
+
     layers();
+
+    styles();
+
 </script>
 
 <?php if(isset($error)){
