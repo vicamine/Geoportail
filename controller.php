@@ -122,4 +122,9 @@
         include('views/user.php');
     }
 
+
+    function API_action($request, $url) {
+        include("API/wms.php");
+    }
+
 ?>
