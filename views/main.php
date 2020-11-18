@@ -2,7 +2,7 @@
     ob_start();
 ?>
 <?php if ( isset($_SESSION['id'])){ ?>
-    <p> <a href='/<?php echo $ROOT; ?>/index.php/addLayer' > Ajouter des layers ! </a> </p>
+    <p> <a href='/<?php echo $ROOT; ?>/index.php/addLayer' > Ajouter des layers ou des styles ! </a> </p>
 <?php } ?>
 
 <h2> Map </h2>
