@@ -70,30 +70,39 @@
                     }
                 }
             }
-            else {
-                if ($type == 'shapefile') {
-                    if (isset($dataList['error'])) {
-                        if (!$dataList['error']) {
-                            echo "<script>alert(\"Layers ajoutées !\")</script>";
-                            $error = '';
-                            include('database.php');
-                            $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
-                                'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
-                            $table = getTable($dataList);
-                            foreach ($table as $value) {
-                                $error = publishLayerDB( $value, $dataList );
-                            }
+            else if ($type == 'shapefile') {
+                if (isset($dataList['error'])) {
+                    if (!$dataList['error']) {
+                        echo "<script>alert(\"Layers ajoutées !\")</script>";
+                        $error = '';
+                        include('database.php');
+                        $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
+                            'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
+                        $table = getTable($dataList);
+                        foreach ($table as $value) {
+                            $error = publishLayerDB( $value, $dataList );
                         }
-                        else {
-                            include('database.php');
-                            $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
-                                'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
-                            $table = getTable($dataList);
-                            foreach ($table as $value) {
-                                publishLayerDB( $value, $dataList );
-                            }
-                            $error = 'Layers not added or partially !';
+                    }
+                    else {
+                        include('database.php');
+                        $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
+                            'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
+                        $table = getTable($dataList);
+                        foreach ($table as $value) {
+                            publishLayerDB( $value, $dataList );
                         }
+                        $error = 'Layers not added or partially !';
+                    }
+                }
+            }
+            elseif ($type == 'style') {
+                if (isset($dataList['error'])) {
+                    if (!$dataList['error']) {
+                        echo "<script>alert(\"Styles ajoutées !\")</script>";
+                        $error = '';
+                    }
+                    else {
+                        $error = 'Style not added or partially !';
                     }
                 }
             }
@@ -106,6 +115,9 @@
         if ($action == 'Supprimer') {
             deleteLayer($data);
             geoDelete($data);
+        }
+        else if ($action == 'Layer') {
+            $layer = $data;
         }
         include('views/user.php');
     }

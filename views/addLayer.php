@@ -13,6 +13,9 @@
             <br>
             <input type="radio" id='shapefile' name="type" value="shapefile" <?php if ($type == 'shapefile') {echo 'checked=check';} ?>/>
             <label for="shapefile"> Archive de shapefile au format ZIP </label>
+            <br>
+            <input type="radio" id='style' name="type" value="style" <?php if ($type == 'style') {echo 'checked=check';} ?>/>
+            <label for="style"> Archive de style (SLD) au format ZIP </label>
         </div>
         <br>
         <div>

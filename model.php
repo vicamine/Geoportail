@@ -147,7 +147,15 @@
             </form>';
         }
         elseif ($type =='shapefile') {
-            $form = '<form action="upload" method="post" enctype="multipart/form-data">
+            $form = '<form action="uploadShape" method="post" enctype="multipart/form-data">
+            	<p> Select zip to upload: </p>
+            	<input type="file" name="fileToUpload" id="fileToUpload">
+            	<!-- <input type="file" name="files[]" id="files[]"> -->
+            	<input type="submit" value="Upload zip" name="submit">
+            </form>';
+        }
+        elseif ($type == 'style') {
+            $form = '<form action="uploadStyle" method="post" enctype="multipart/form-data">
             	<p> Select zip to upload: </p>
             	<input type="file" name="fileToUpload" id="fileToUpload">
             	<!-- <input type="file" name="files[]" id="files[]"> -->
@@ -283,6 +291,50 @@
             $result = pg_query($query);
             disconnectFromDB($sql);
         }
+    }
+
+
+    function publishStyle($filePath){
+        $fileName = explode('/', $filePath)[6];
+        $styleName = explode('.', $fileName)[0];
+        $url = "http://localhost:8080/geoserver/rest/styles";
+        $ch = curl_init( $url );
+        $POST_DATA = "<style><name>".$styleName."</name><filename>".$fileName."</filename></style>";
+        curl_setopt($ch, CURLOPT_POST, True);
+        curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: text/xml"));
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $POST_DATA);
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        $POST_DATA = fopen($filePath, 'rb');
+        $url = "http://localhost:8080/geoserver/rest/styles/".$styleName;
+        $ch = curl_init( $url );
+        curl_setopt($ch, CURLOPT_PUT, true);
+        curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: application/vnd.ogc.sld+xml"));
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt($ch, CURLOPT_INFILE, $POST_DATA);
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        if ( $res == '' ) {
+            return true;
+        }
+        return false;
+    }
+
+
+    function removeDirectory($path) {
+    	$files = glob($path . '/*');
+    	foreach ($files as $file) {
+    		is_dir($file) ? removeDirectory($file) : unlink($file);
+    	}
+        if ($path != "C:/xampp/htdocs/Geoportail/Uploads"){
+            rmdir($path);
+        }
+    	return;
     }
 
 ?>

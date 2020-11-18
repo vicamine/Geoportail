@@ -107,7 +107,7 @@ function capabilities() {
                 if (x[i].getElementsByTagName('SRS').length > 0) {
                     link.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
                     x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
-                } else {
+                } else if (x[i].getElementsByTagName('CRS').length > 0) {
                     link.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
                     x[i].getElementsByTagName('CRS')[0].innerHTML + ' | ';
                 }
@@ -172,7 +172,7 @@ function addLay ( layername, style ) {
     slider.min = 0;
     slider.max = 1;
     slider.step = 0.01;
-    slider.value = 0.5;
+    slider.value = 1;
     slider.setAttribute('class', 'slider');
     slider.setAttribute('id', layername.replace(':', '__')+'Slider');
     var js = "opacityChange(this.value, \""+layername+"\")";
