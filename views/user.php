@@ -5,7 +5,21 @@
     <p> <a href='/<?php echo $ROOT; ?>/index.php/addLayer' > Ajouter des layers ou des styles ! </a> </p>
 <?php } ?>
 
-<div id="layer"> </div>
+<div id="layer">
+    <?php if ( $action == 'Layer' ) { ?>
+        <h2> Détails </h2>
+        <h3> Avaible styles </h3>
+        <div id="availableStyle">
+            <ul> </ul>
+        </div>
+
+        <h3> Current styles </h3>
+        <div id="currentStyle">
+            <ul> </ul>
+        </div>
+    <?php } ?>
+
+</div>
 
 <h2> Gestion des Layers </h2>
 
@@ -32,6 +46,7 @@
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <script type="text/javascript">
+
     function layers() {
         $.ajax({
             url: '../getCapabilities.php',
@@ -43,6 +58,9 @@
             dataType: 'xml',
             success: function(res) {
                 var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
+                <?php if (isset($layer)) {?>
+                    document.querySelector('#layer').append(document.createElement('p').innerHTML = "layername    |    projection    |    default styles");
+                <?php } ?>
                 for (i = 0; i < x.length; i++) {
 
                     var name = x[i].getElementsByTagName('Name')[0].innerHTML;
@@ -63,9 +81,10 @@
                         }
                         var styles = x[i].getElementsByTagName('Style');
                         for ( elem of styles) {
-                            data.innerHTML += elem.getElementsByTagName('Name')[0].innerHTML + ' ';
+                            style = elem.getElementsByTagName('Name')[0].innerHTML;
+                            data.innerHTML += style + '  ';
                         }
-                        document.querySelector('#layer').append(data);
+                        document.querySelector('#layer').insertBefore(data, document.querySelector('h2+h3'));
                     }
                     <?php } ?>
 
@@ -87,29 +106,26 @@
         });
     }
 
-
     function styles () {
         $.ajax({
-            url: 'http://localhost:8080/geoserver/rest/styles.xml',
+            url: "http://localhost:8080/geoserver/rest/workspaces/<?php echo $_SESSION['login']; ?>/styles.xml",
             type: 'GET',
             dataType: 'xml',
             success: function(res) {
                 var x = res.getElementsByTagName("name");
                 for (i = 0; i < x.length; i++) {
                     var name = x[i].innerHTML;
-                    if ( name.split('_')[0] == "<?php echo $_SESSION['login']; ?>" ) {
-                        var style = document.createElement('input');
-                        var styleLabel = document.createElement('label');
-                        styleLabel.innerHTML = name;
-                        styleLabel.setAttribute('for', name);
-                        style.type = 'checkbox';
-                        style.name = 'style[]';
-                        style.value = name;
-                        style.setAttribute('id', name);
-                        document.querySelector('.formulaireStyle').append(style);
-                        document.querySelector('.formulaireStyle').append(styleLabel);
-                        document.querySelector('.formulaireStyle').append(document.createElement('br'));
-                    }
+                    var style = document.createElement('input');
+                    var styleLabel = document.createElement('label');
+                    styleLabel.innerHTML = name;
+                    styleLabel.setAttribute('for', name);
+                    style.type = 'checkbox';
+                    style.name = 'style[]';
+                    style.value = name;
+                    style.setAttribute('id', name);
+                    document.querySelector('.formulaireStyle').append(style);
+                    document.querySelector('.formulaireStyle').append(styleLabel);
+                    document.querySelector('.formulaireStyle').append(document.createElement('br'));
                 }
             }
         });

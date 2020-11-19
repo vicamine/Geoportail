@@ -297,9 +297,9 @@
     function publishStyle($filePath){
         $fileName = explode('/', $filePath)[6];
         $styleName = explode('.', $fileName)[0];
-        $url = "http://localhost:8080/geoserver/rest/styles";
+        $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/styles";
         $ch = curl_init( $url );
-        $POST_DATA = "<style><name>".$_SESSION['login'].'_'.$styleName."</name><filename>".$fileName."</filename></style>";
+        $POST_DATA = "<style><name>".$styleName."</name><filename>".$fileName."</filename></style>";
         curl_setopt($ch, CURLOPT_POST, True);
         curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
         curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: text/xml"));
@@ -309,7 +309,7 @@
         curl_close($ch);
 
         $POST_DATA = fopen($filePath, 'rb');
-        $url = "http://localhost:8080/geoserver/rest/styles/".$_SESSION['login'].'_'.$styleName;
+        $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/styles/".$styleName;
         $ch = curl_init( $url );
         curl_setopt($ch, CURLOPT_PUT, true);
         curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
@@ -340,7 +340,7 @@
 
     function deleteStyle($styleList) {
         foreach ($styleList as $style) {
-            $url = "http://localhost:8080/geoserver/rest/styles/".$style."?purge=true";
+            $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/styles/".$style."?purge=true";
             $ch = curl_init( $url );
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
             curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');

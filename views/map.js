@@ -114,11 +114,12 @@ function capabilities() {
 
                 var str = '';
                 for ( elem of styles) {
-                    link.innerHTML += elem.getElementsByTagName('Name')[0].innerHTML + ' ';
                     if (str == '') {
+                        link.innerHTML += elem.getElementsByTagName('Name')[0].innerHTML;
                         str += elem.getElementsByTagName('Name')[0].innerHTML;
                     } else {
-                        str += ',' + elem.getElementsByTagName('Name')[0].innerHTML;
+                        link.innerHTML += ', ' + elem.getElementsByTagName('Name')[0].innerHTML;
+                        str += ', ' + elem.getElementsByTagName('Name')[0].innerHTML;
                     }
                 }
                 str += '';
