@@ -8,6 +8,9 @@
 <h2> Map </h2>
 <div id='map' class="map"></div>
 
+<h3> Legende </h3>
+<div id="legende"> </div>
+
 <h2> Features </h2>
 <div id='features'> </div>
 

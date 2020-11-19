@@ -340,7 +340,7 @@
 
     function deleteStyle($styleList) {
         foreach ($styleList as $style) {
-            $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/styles/".$style."?purge=true";
+            $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/styles/".$style."?purge=true&recurse=true";
             $ch = curl_init( $url );
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
             curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');

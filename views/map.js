@@ -161,6 +161,7 @@ function addLay ( layername, style ) {
             })
         }));
     }
+    legende( layername, style );
 
     layers.push(layer);
 
@@ -225,6 +226,11 @@ function removeLay ( layername ) {
                 del = document.querySelector('#'+'z'+layername.replace(':', '__'));
                 del.remove();
 
+                delLegend = document.querySelector('#z'+layername.replace(':', '__')+'Legende');
+                if ( delLegend != null ) {
+                    delLegend.remove();
+                }
+
                 layers.forEach(function (elem, index) {
                     if ( elem.get('name') == layer.get('name')) {
                         toDelete = index;
@@ -252,4 +258,13 @@ function opacityChange( opacity, layername ) {
             }
         }
     });
+}
+
+
+function legende( layer, style ) {
+    var legende = document.createElement('img');
+    legende.alt = 'Légende de la layer '+layer;
+    legende.src = 'http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer='+layer+'&style='+style+'&transparent=true';
+    legende.setAttribute('id', 'z'+layer.replace(':', '__')+'Legende');
+    document.querySelector('#legende').append(legende);
 }

@@ -8,6 +8,8 @@
 <div id="layer">
     <?php if ( $action == 'Layer' ) { ?>
         <h2> Détails </h2>
+        <div id="details"> </div>
+
         <h3> Avaible styles </h3>
         <div id="availableStyle">
             <ul> </ul>
@@ -59,7 +61,7 @@
             success: function(res) {
                 var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
                 <?php if (isset($layer)) {?>
-                    document.querySelector('#layer').append(document.createElement('p').innerHTML = "layername    |    projection    |    default styles");
+                    document.querySelector('#details').append( document.createElement('p').innerHTML = "layername    |    projection    |    default styles" );
                 <?php } ?>
                 for (i = 0; i < x.length; i++) {
 
@@ -84,7 +86,7 @@
                             style = elem.getElementsByTagName('Name')[0].innerHTML;
                             data.innerHTML += style + '  ';
                         }
-                        document.querySelector('#layer').insertBefore(data, document.querySelector('h2+h3'));
+                        document.querySelector('#details').append( data );
                     }
                     <?php } ?>
 
