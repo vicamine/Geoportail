@@ -10,7 +10,7 @@
         <h2> Détails </h2>
         <div id="details"> </div>
 
-        <h3> Avaible styles </h3>
+        <h3> Available styles </h3>
         <div id="availableStyle">
             <ul> </ul>
         </div>
@@ -82,14 +82,74 @@
                             x[i].getElementsByTagName('CRS')[0].innerHTML + ' | ';
                         }
                         var styles = x[i].getElementsByTagName('Style');
+                        var unavailableStyle = [];
+                        data.innerHTML += styles[0].getElementsByTagName('Name')[0].innerHTML + '  ';
                         for ( elem of styles) {
-                            style = elem.getElementsByTagName('Name')[0].innerHTML;
-                            data.innerHTML += style + '  ';
+                            unavailableStyle.push(elem.getElementsByTagName('Name')[0].innerHTML);
+                            if (elem.getElementsByTagName('Name')[0].innerHTML != styles[0].getElementsByTagName('Name')[0].innerHTML) {
+                                var style = elem.getElementsByTagName('Name')[0].innerHTML;
+                                var li = document.createElement('li');
+                                var link = document.createElement('a');
+                                var js = "current( \"<?php echo $layer; ?>\", \""+elem.getElementsByTagName('Name')[0].innerHTML+"\")";
+                                link.setAttribute('href', "javascript:void(0);");
+                                link.setAttribute('ondblclick', js);
+                                link.innerHTML = style;
+                                li.append(link);
+                                li.setAttribute('id', style + 'Style');
+                                document.querySelector('#currentStyle ul').append(li);
+                                document.querySelector('#currentStyle ul').append(document.createElement('br'));
+                            }
                         }
                         document.querySelector('#details').append( data );
+
+                        $.ajax({
+                            url: 'http://localhost:8080/geoserver/rest/styles.xml',
+                            type: 'GET',
+                            dataType: 'xml',
+                            success: function(res) {
+                                var y = res.getElementsByTagName('name');
+                                for (j=0; j < y.length; j++) {
+                                    if ( !unavailableStyle.includes(y[j].innerHTML) ) {
+                                        var li = document.createElement('li');
+                                        var link = document.createElement('a');
+                                        var js = "available( \"<?php echo $layer; ?>\", \""+y[j].innerHTML+"\")";
+                                        link.setAttribute('href', "javascript:void(0);");
+                                        link.setAttribute('ondblclick', js);
+                                        link.innerHTML = y[j].innerHTML;
+                                        li.setAttribute('id', y[j].innerHTML + 'Style');
+                                        li.append(link);
+                                        document.querySelector('#availableStyle ul').append(li);
+                                        document.querySelector('#availableStyle ul').append(document.createElement('br'));
+                                    }
+                                }
+                            }
+                        });
+
+                        $.ajax({
+                            url: 'http://localhost:8080/geoserver/rest/workspaces/<?php echo $_SESSION['login']; ?>/styles.xml',
+                            type: 'GET',
+                            dataType: 'xml',
+                            success: function(res) {
+                                var z = res.getElementsByTagName('name');
+                                for (j=0; j < z.length; j++) {
+                                    if ( !unavailableStyle.includes('<?php echo $_SESSION['login']; ?>:'+z[j].innerHTML) ) {
+                                        var li = document.createElement('li');
+                                        var link = document.createElement('a');
+                                        var js = "available( \"<?php echo $layer; ?>\", \""+'<?php echo $_SESSION['login']; ?>:'+z[j].innerHTML+"\")";
+                                        link.setAttribute('href', "javascript:void(0);");
+                                        link.setAttribute('ondblclick', js);
+                                        link.innerHTML = '<?php echo $_SESSION['login']; ?>:' + z[j].innerHTML;
+                                        li.setAttribute('id', z[j].innerHTML + 'Style');
+                                        li.append(link);
+                                        document.querySelector('#availableStyle ul').append(li);
+                                        document.querySelector('#availableStyle ul').append(document.createElement('br'));
+
+                                    }
+                                }
+                            }
+                        });
                     }
                     <?php } ?>
-
 
                     var layer = document.createElement('input');
                     var layerLabel = document.createElement('a');
@@ -128,6 +188,46 @@
                     document.querySelector('.formulaireStyle').append(style);
                     document.querySelector('.formulaireStyle').append(styleLabel);
                     document.querySelector('.formulaireStyle').append(document.createElement('br'));
+                }
+            }
+        });
+    }
+
+    function available( layer, style ) {
+        $.ajax({
+            url: "../model.php",
+            type: "POST",
+            data: {
+                action: "addStyleToLayer",
+                layer: layer,
+                style: style
+            },
+            success: function(res) {
+                if ( res == 1 ) {
+                    document.location.reload();
+                }
+                else {
+                    window.alert("Une erreur est survenue !");
+                }
+            }
+        });
+    }
+
+    function current( layer, style ) {
+        $.ajax({
+            url: "../model.php",
+            type: "POST",
+            data: {
+                action: "delStyleToLayer",
+                layer: layer,
+                style: style.replace("<?php echo $_SESSION['login'] ?>:", "")
+            },
+            success: function(res) {
+                if ( res == 1 ) {
+                    document.location.reload();
+                }
+                else {
+                    window.alert("Une erreur est survenue !");
                 }
             }
         });
