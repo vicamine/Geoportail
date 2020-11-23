@@ -116,6 +116,9 @@
             deleteLayer($data);
             geoDelete($data);
         }
+        else if ($action == 'SupprimerStyle') {
+            deleteStyle($data);
+        }
         else if ($action == 'Layer') {
             $layer = $data;
         }

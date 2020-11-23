@@ -5,7 +5,23 @@
     <p> <a href='/<?php echo $ROOT; ?>/index.php/addLayer' > Ajouter des layers ou des styles ! </a> </p>
 <?php } ?>
 
-<div id="layer"> </div>
+<div id="layer">
+    <?php if ( $action == 'Layer' ) { ?>
+        <h2> Détails </h2>
+        <div id="details"> </div>
+
+        <h3> Available styles </h3>
+        <div id="availableStyle">
+            <ul> </ul>
+        </div>
+
+        <h3> Current styles </h3>
+        <div id="currentStyle">
+            <ul> </ul>
+        </div>
+    <?php } ?>
+
+</div>
 
 <h2> Gestion des Layers </h2>
 
@@ -20,11 +36,19 @@
 
 <h2> Gestion des Styles </h2>
 
-<div class="styles"> </div>
+<div class="styles">
+
+    <form class='formulaireStyle' action="<?php echo $URI; ?>" method="post">
+        <input type="submit" name="supprimerStyle" value="Supprimer">
+        <br><br>
+    </form>
+
+</div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
 <script type="text/javascript">
+
     function layers() {
         $.ajax({
             url: '../getCapabilities.php',
@@ -36,6 +60,9 @@
             dataType: 'xml',
             success: function(res) {
                 var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
+                <?php if (isset($layer)) {?>
+                    document.querySelector('#details').append( document.createElement('p').innerHTML = "layername    |    projection    |    default styles" );
+                <?php } ?>
                 for (i = 0; i < x.length; i++) {
 
                     var name = x[i].getElementsByTagName('Name')[0].innerHTML;
@@ -55,13 +82,74 @@
                             x[i].getElementsByTagName('CRS')[0].innerHTML + ' | ';
                         }
                         var styles = x[i].getElementsByTagName('Style');
+                        var unavailableStyle = [];
+                        data.innerHTML += styles[0].getElementsByTagName('Name')[0].innerHTML + '  ';
                         for ( elem of styles) {
-                            data.innerHTML += elem.getElementsByTagName('Name')[0].innerHTML + ' ';
+                            unavailableStyle.push(elem.getElementsByTagName('Name')[0].innerHTML);
+                            if (elem.getElementsByTagName('Name')[0].innerHTML != styles[0].getElementsByTagName('Name')[0].innerHTML) {
+                                var style = elem.getElementsByTagName('Name')[0].innerHTML;
+                                var li = document.createElement('li');
+                                var link = document.createElement('a');
+                                var js = "current( \"<?php echo $layer; ?>\", \""+elem.getElementsByTagName('Name')[0].innerHTML+"\")";
+                                link.setAttribute('href', "javascript:void(0);");
+                                link.setAttribute('ondblclick', js);
+                                link.innerHTML = style;
+                                li.append(link);
+                                li.setAttribute('id', style + 'Style');
+                                document.querySelector('#currentStyle ul').append(li);
+                                document.querySelector('#currentStyle ul').append(document.createElement('br'));
+                            }
                         }
-                        document.querySelector('#layer').append(data);
+                        document.querySelector('#details').append( data );
+
+                        $.ajax({
+                            url: 'http://localhost:8080/geoserver/rest/styles.xml',
+                            type: 'GET',
+                            dataType: 'xml',
+                            success: function(res) {
+                                var y = res.getElementsByTagName('name');
+                                for (j=0; j < y.length; j++) {
+                                    if ( !unavailableStyle.includes(y[j].innerHTML) ) {
+                                        var li = document.createElement('li');
+                                        var link = document.createElement('a');
+                                        var js = "available( \"<?php echo $layer; ?>\", \""+y[j].innerHTML+"\")";
+                                        link.setAttribute('href', "javascript:void(0);");
+                                        link.setAttribute('ondblclick', js);
+                                        link.innerHTML = y[j].innerHTML;
+                                        li.setAttribute('id', y[j].innerHTML + 'Style');
+                                        li.append(link);
+                                        document.querySelector('#availableStyle ul').append(li);
+                                        document.querySelector('#availableStyle ul').append(document.createElement('br'));
+                                    }
+                                }
+                            }
+                        });
+
+                        $.ajax({
+                            url: 'http://localhost:8080/geoserver/rest/workspaces/<?php echo $_SESSION['login']; ?>/styles.xml',
+                            type: 'GET',
+                            dataType: 'xml',
+                            success: function(res) {
+                                var z = res.getElementsByTagName('name');
+                                for (j=0; j < z.length; j++) {
+                                    if ( !unavailableStyle.includes('<?php echo $_SESSION['login']; ?>:'+z[j].innerHTML) ) {
+                                        var li = document.createElement('li');
+                                        var link = document.createElement('a');
+                                        var js = "available( \"<?php echo $layer; ?>\", \""+'<?php echo $_SESSION['login']; ?>:'+z[j].innerHTML+"\")";
+                                        link.setAttribute('href', "javascript:void(0);");
+                                        link.setAttribute('ondblclick', js);
+                                        link.innerHTML = '<?php echo $_SESSION['login']; ?>:' + z[j].innerHTML;
+                                        li.setAttribute('id', z[j].innerHTML + 'Style');
+                                        li.append(link);
+                                        document.querySelector('#availableStyle ul').append(li);
+                                        document.querySelector('#availableStyle ul').append(document.createElement('br'));
+
+                                    }
+                                }
+                            }
+                        });
                     }
                     <?php } ?>
-
 
                     var layer = document.createElement('input');
                     var layerLabel = document.createElement('a');
@@ -80,7 +168,75 @@
         });
     }
 
+    function styles () {
+        $.ajax({
+            url: "http://localhost:8080/geoserver/rest/workspaces/<?php echo $_SESSION['login']; ?>/styles.xml",
+            type: 'GET',
+            dataType: 'xml',
+            success: function(res) {
+                var x = res.getElementsByTagName("name");
+                for (i = 0; i < x.length; i++) {
+                    var name = x[i].innerHTML;
+                    var style = document.createElement('input');
+                    var styleLabel = document.createElement('label');
+                    styleLabel.innerHTML = name;
+                    styleLabel.setAttribute('for', name);
+                    style.type = 'checkbox';
+                    style.name = 'style[]';
+                    style.value = name;
+                    style.setAttribute('id', name);
+                    document.querySelector('.formulaireStyle').append(style);
+                    document.querySelector('.formulaireStyle').append(styleLabel);
+                    document.querySelector('.formulaireStyle').append(document.createElement('br'));
+                }
+            }
+        });
+    }
+
+    function available( layer, style ) {
+        $.ajax({
+            url: "../model.php",
+            type: "POST",
+            data: {
+                action: "addStyleToLayer",
+                layer: layer,
+                style: style
+            },
+            success: function(res) {
+                if ( res == 1 ) {
+                    document.location.reload();
+                }
+                else {
+                    window.alert("Une erreur est survenue !");
+                }
+            }
+        });
+    }
+
+    function current( layer, style ) {
+        $.ajax({
+            url: "../model.php",
+            type: "POST",
+            data: {
+                action: "delStyleToLayer",
+                layer: layer,
+                style: style.replace("<?php echo $_SESSION['login'] ?>:", "")
+            },
+            success: function(res) {
+                if ( res == 1 ) {
+                    document.location.reload();
+                }
+                else {
+                    window.alert("Une erreur est survenue !");
+                }
+            }
+        });
+    }
+
     layers();
+
+    styles();
+
 </script>
 
 <?php if(isset($error)){

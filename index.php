@@ -77,6 +77,9 @@
             if ( isset($_POST['supprimer']) && isset($_POST['layer']) ) {
                 user_action($_POST['supprimer'], $_POST['layer'] , $URI, $ROOT, $PATH );
             }
+            else if ( isset($_POST['supprimerStyle']) && isset($_POST['style']) ) {
+                user_action($_POST['supprimerStyle'].'Style', $_POST['style'] , $URI, $ROOT, $PATH );
+            }
             else if ( isset($_GET['action']) && isset( $_GET['data']) ) {
                 user_action( $_GET['action'], $_GET['data'] , $URI, $ROOT, $PATH );
             }

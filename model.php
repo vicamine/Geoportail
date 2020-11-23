@@ -1,5 +1,31 @@
 <?php
 
+    if ( isset($_POST["action"]) ) {
+        if ( $_POST["action"] == "addStyleToLayer" ) {
+            $res = addStyleToLayer( $_POST["layer"], $_POST["style"] );
+            if ( strtolower($res) == strtolower($_POST["style"])) {
+                echo true;
+            }
+            else {
+                echo false;
+            }
+        }
+    }
+
+
+    if ( isset($_POST["action"]) ) {
+        if ( $_POST["action"] == "delStyleToLayer" ) {
+            $res = delStyleToLayer( $_POST["layer"], $_POST["style"] );
+            if ( $res ) {
+                echo true;
+            }
+            else {
+                echo false;
+            }
+        }
+    }
+
+
     function connectToDB(){
         include('database.php');
         $sql = pg_connect('host='.$host.' port='.$port.' dbname='.$dbname.' user='.$user.' password='.$password );
@@ -61,6 +87,7 @@
             return true;
         }
     }
+
 
     function verification_login($login){
         $query = "SELECT * FROM admin.user WHERE login=$1";
@@ -297,7 +324,7 @@
     function publishStyle($filePath){
         $fileName = explode('/', $filePath)[6];
         $styleName = explode('.', $fileName)[0];
-        $url = "http://localhost:8080/geoserver/rest/styles";
+        $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/styles";
         $ch = curl_init( $url );
         $POST_DATA = "<style><name>".$styleName."</name><filename>".$fileName."</filename></style>";
         curl_setopt($ch, CURLOPT_POST, True);
@@ -309,7 +336,7 @@
         curl_close($ch);
 
         $POST_DATA = fopen($filePath, 'rb');
-        $url = "http://localhost:8080/geoserver/rest/styles/".$styleName;
+        $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/styles/".$styleName;
         $ch = curl_init( $url );
         curl_setopt($ch, CURLOPT_PUT, true);
         curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
@@ -335,6 +362,70 @@
             rmdir($path);
         }
     	return;
+    }
+
+
+    function deleteStyle($styleList) {
+        foreach ($styleList as $style) {
+            $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/styles/".$style."?purge=true&recurse=true";
+            $ch = curl_init( $url );
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
+            curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
+            curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
+            curl_exec($ch);
+            curl_close($ch);
+        }
+    }
+
+
+    function addStyleToLayer( $layer, $style ) {
+        $url = "http://localhost:8080/geoserver/rest/layers/".$layer."/styles";
+        $ch = curl_init( $url );
+        $POST_DATA = "<style><name>".$style."</name></style>";
+        curl_setopt($ch, CURLOPT_POST, True);
+        curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: text/xml"));
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $POST_DATA);
+        $res = curl_exec($ch);
+        curl_close($ch);
+        return $res;
+    }
+
+
+    function delStyleToLayer( $layer, $style ) {
+        $url = "http://localhost:8080/geoserver/rest/layers/".$layer."/styles.json";
+        $ch = curl_init( $url );
+        curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        $res = json_decode($res, true);
+        $styles = array();
+        foreach ($res["styles"]["style"] as $elem) {
+            if ( $elem['name'] != $style ) {
+                array_push( $styles, $elem['name'] );
+            }
+        }
+
+        $url = "http://localhost:8080/geoserver/rest/layers/".$layer;
+        $POST_DATA = "<layer><styles></styles></layer>";
+        $ch = curl_init( $url );
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+        curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: text/xml"));
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $POST_DATA);
+        $res = curl_exec($ch);
+        curl_close($ch);
+
+        foreach ($styles as $toAdd) {
+            addStyleToLayer( $layer, $toAdd );
+        }
+
+        return $styles;
     }
 
 ?>
