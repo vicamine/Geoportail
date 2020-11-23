@@ -510,11 +510,15 @@
         $res = curl_exec($ch);
         curl_close($ch);
 
+        $ok = true;
         foreach ($styles as $toAdd) {
-            addStyleToLayer( $layer, $toAdd );
+            $check = addStyleToLayer( $layer, $toAdd );
+            if ($check != $toAdd) {
+                $ok = false;
+            }
         }
 
-        return $styles;
+        return $ok;
     }
 
 ?>
