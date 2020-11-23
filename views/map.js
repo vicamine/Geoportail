@@ -3,6 +3,10 @@ var layers = [];
 var map;
 var view;
 
+
+/**
+ Cette fonction permet d'initialiser la map d'OpenLayers d'ajouter le fond de carte et préparer l'eventlistener pour le GetFeatureInfo
+ */
 function initMap () {
     view = new ol.View({
         center: ol.proj.fromLonLat([ 0, 0 ]),
@@ -44,6 +48,9 @@ function initMap () {
 }
 
 
+/**
+ Permet de récupérer un fichier getCapabilities, le parse et l'affiche sous forme d'arborescence.
+ */
 function capabilities() {
 
     $.ajax({
@@ -137,6 +144,9 @@ function capabilities() {
 }
 
 
+/**
+ Permet d'ajouter une layer sur la map et permet ensuite de la manager via une partie réservé
+ */
 function addLay ( layername, style ) {
     var layer;
     if ( style == "" ) {
@@ -215,6 +225,9 @@ function addLay ( layername, style ) {
 }
 
 
+/**
+ Permet de supprimer une layer de la map et supprime toutes ses reférences
+ */
 function removeLay ( layername ) {
     var toDelete;
     map.getLayers().forEach(function (layer) {
@@ -244,12 +257,18 @@ function removeLay ( layername ) {
 }
 
 
+/**
+ Permet de changer le style d'une layer en la supprimant puis la rajoutant avec le style demandé
+ */
 function styleChange( style, layername ) {
     removeLay(layername);
     addLay(layername, style);
 }
 
 
+/**
+ Permet de gérer la transparence d'une layer grace à des méthodes de la librairie OpenLayers
+ */
 function opacityChange( opacity, layername ) {
     map.getLayers().forEach(function (layer) {
         if (layer != null) {
@@ -261,6 +280,9 @@ function opacityChange( opacity, layername ) {
 }
 
 
+/**
+ Permet de récupérer la légende du style d'une layer ( GetLegendGraphic )
+ */
 function legende( layer, style ) {
     var legende = document.createElement('img');
     legende.alt = 'Légende de la layer '+layer;
