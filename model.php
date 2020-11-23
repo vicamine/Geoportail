@@ -26,6 +26,10 @@
     }
 
 
+    /**
+     * Permet de créer une connexion vers la base de données
+     * @return mysqli
+     */
     function connectToDB(){
         include('database.php');
         $sql = pg_connect('host='.$host.' port='.$port.' dbname='.$dbname.' user='.$user.' password='.$password );
@@ -33,13 +37,22 @@
     }
 
 
+    /**
+     * Permet de se déconnecter de la base de données
+     * @param $sql
+     */
     function disconnectFromDB($sql){
         pg_close($sql);
     }
 
 
+    /**
+     * Permet de faire des requetes Select preparer
+     * @param string $requete
+     * @param mixed $params
+     * @return mixed $row
+     */
     function doPreparedSelect($requete, $params){
-
         $sql=connectToDB();
         $result=pg_prepare($sql, "prepared_query", $requete);
         $result = pg_execute($sql, "prepared_query", $params);
@@ -47,22 +60,29 @@
         pg_free_result($result);
         disconnectFromDB($sql);
         return $row;
-
     }
 
 
+    /**
+     * Permet de faire des requetes preparer qui ne retourne rien
+     * @param string $requete
+     * @param mixed $params
+     */
     function doPreparedRequest($requete, $params){
-
         $sql=connectToDB();
         $result=pg_prepare($sql, "prepared_query", $requete);
         $result = pg_execute($sql, "prepared_query", $params);
         disconnectFromDB($sql);
-
     }
 
 
+    /**
+     * Permet à un utilisateur de se connecter
+     * @param string $login
+     * @param string $password
+     * @return mixed $rows
+     */
     function isUser($login, $password){
-
         $sql=connectToDB();
         $result=pg_prepare($sql, "prepared_query", 'SELECT * FROM admin.user WHERE login=$1 AND password=$2');
         $result = pg_execute($sql, "prepared_query", array($login, $password));
@@ -77,6 +97,14 @@
     }
 
 
+    /**
+     * Permet d'inserer un utilisateur dans la BDD
+     * @param string $nom
+     * @param string $prenom
+     * @param string $login
+     * @param string $password
+     * @return bool
+     */
     function insert_user( $nom, $prenom, $login, $password ) {
         if ( !verification_login ($login)) {
             return false;
@@ -89,6 +117,11 @@
     }
 
 
+    /**
+     * Permet de vérifier si un login existe déja
+     * @param string $login
+     * @return bool
+     */
     function verification_login($login){
         $query = "SELECT * FROM admin.user WHERE login=$1";
         $result = doPreparedSelect($query, array($login));
@@ -103,6 +136,11 @@
     }
 
 
+    /**
+     * Permet de savoir dans quel fichier on se trouve
+     * @param string $URI
+     * @return string $PATH
+     */
     function getCurrentPath($URI){
         $PATH = explode("/", $URI);
         $i = 0;
@@ -117,6 +155,11 @@
     }
 
 
+    /**
+     * Permet de savoir dans quel fichier on se trouve
+     * @param string $URI
+     * @return string $COMPLETE_PATH
+     */
     function getCompletePath($URI){
         $PATH = explode("/", $URI);
         $i = 0;
@@ -136,6 +179,12 @@
     }
 
 
+    /**
+     * Permet de générer dynamiquement les formulaires d'ajouts via une préselection
+     * @param string $type
+     * @param string $URI
+     * @return string $form
+     */
     function getForm($type, $URI) {
         if ($type == 'postgis') {
             $form = '<form action="'.$URI.'" method="post">
@@ -196,8 +245,13 @@
     }
 
 
+    /**
+     * Permet de créer un workspace sur le geoserver
+     * @param string $login
+     * @return string $result
+     */
     function create_workspace($login) {
-        $url = "http://localhost:8080/geoserver/rest/workspaces"; // your address can change depending upon the configuration of the geoserver
+        $url = "http://localhost:8080/geoserver/rest/workspaces"; // geoserver address
         $ch = curl_init( $url );
 
         // Setup request to send json via POST.
@@ -206,15 +260,19 @@
         curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver'); //credentials (user:password)
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload );
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        // Return response instead of printing.
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-        // Send request.
         $result = curl_exec($ch);
         curl_close($ch);
         return $result;
     }
 
 
+    /**
+     * Permet de créer un store à partir d'une base de donnée sur le geoserver
+     * @param string $login
+     * @param array $dataList
+     * @return bool
+     */
     function create_store_db($login, $dataList){
         $payload = array('dataStore' => array('name' => $dataList['store'], //name of the datastore
                                       'description' => $dataList['description'],
@@ -232,19 +290,14 @@
                                       'featureTypes' => array('test') //usually the name of the workspace
                                       )
                   );
-        // echo(json_encode($payload)); die();
-        $url = "http://localhost:8080/geoserver/rest/workspaces/".$login."/datastores";// your address can change depending upon the configuration of the geoserver
+        $url = "http://localhost:8080/geoserver/rest/workspaces/".$login."/datastores";
         $ch = curl_init( $url );
 
-        # Setup request to send json via POST.
         curl_setopt($ch, CURLOPT_POST, True);
         curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
         curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($payload)); //supply json as payload
-
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        # Return response instead of printing.
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-        # Send request.
         $result = curl_exec($ch);
         curl_close($ch);
         if ($result == $dataList['store']) {
@@ -254,6 +307,11 @@
     }
 
 
+    /**
+     * Permet de récupérer toutes les layers dans la bdd postgis sous forme de table
+     * @param array $dataList
+     * @return array $res
+     */
     function getTable( $dataList ) {
         // Connexion, sélection de la base de données
         $dbconn = pg_connect("host=".$dataList['host']." dbname=".$dataList['database']." user=".$dataList['user']." password=".$dataList['password']);
@@ -276,34 +334,37 @@
     }
 
 
+    /**
+     * Permet de publier une layer présente dans une base de données
+     * @param string $layerName
+     * @param array $dataList
+     * @return string $result
+     */
     function publishLayerDB( $layerName, $dataList ) {
         $payload = array('featureType' => array( 'name' => $layerName ));
-        // echo(json_encode($payload)); die();
-        $url = "http://localhost:8080/geoserver/rest/workspaces/".$dataList['login']."/datastores/".$dataList['store']."/featuretypes";// your address can change depending upon the configuration of the geoserver
+        $url = "http://localhost:8080/geoserver/rest/workspaces/".$dataList['login']."/datastores/".$dataList['store']."/featuretypes";
         $ch = curl_init( $url );
-
-        # Setup request to send json via POST.
         curl_setopt($ch, CURLOPT_POST, True);
         curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($payload)); //supply json as payload
-
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($payload));
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
-        # Return response instead of printing.
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-        # Send request.
         $result = curl_exec($ch);
         curl_close($ch);
         return $result;
     }
 
 
+    /**
+     * Permet de supprimer une ou plusieurs layers de geoserver
+     * @param array $layerList
+     */
     function geoDelete($layerList) {
         foreach ($layerList as $layer) {
             $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/datastores/".$_SESSION['login']."/featuretypes/".str_replace($_SESSION['login'].':', '', $layer)."?recurse=true";
             $ch = curl_init( $url );
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "DELETE");
             curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
-            //curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-type: application/atom+xml"));
             curl_setopt( $ch, CURLOPT_RETURNTRANSFER, false );
             curl_exec($ch);
             curl_close($ch);
@@ -311,6 +372,10 @@
     }
 
 
+    /**
+     * Permet de supprimer une ou plusieurs layers de la base de données
+     * @param array $layerList
+     */
     function deleteLayer($layerList) {
         foreach ( $layerList as $layer) {
             $sql = connectToDB();
@@ -321,6 +386,11 @@
     }
 
 
+    /**
+     * Permet de publier un style sur geoserver à partir du chemin d'un fichier .SLD
+     * @param string $filePath
+     * @return bool
+     */
     function publishStyle($filePath){
         $fileName = explode('/', $filePath)[6];
         $styleName = explode('.', $fileName)[0];
@@ -353,6 +423,10 @@
     }
 
 
+    /**
+     * Permet de supprimer récursivement tous les fichiers et sous-dossier d'un dossier dont le chemin est passé en paramètre
+     * @param string $path
+     */
     function removeDirectory($path) {
     	$files = glob($path . '/*');
     	foreach ($files as $file) {
@@ -361,10 +435,13 @@
         if ($path != "C:/xampp/htdocs/Geoportail/Uploads"){
             rmdir($path);
         }
-    	return;
     }
 
 
+    /**
+     * Permet de supprimer un ou plusieurs style publié sur geoserver
+     * @param array $styleList
+     */
     function deleteStyle($styleList) {
         foreach ($styleList as $style) {
             $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/styles/".$style."?purge=true&recurse=true";
@@ -378,6 +455,12 @@
     }
 
 
+    /**
+     * Permet d'affecter un style à une layer geoserver
+     * @param string $layer
+     * @param string $style
+     * @return string $res
+     */
     function addStyleToLayer( $layer, $style ) {
         $url = "http://localhost:8080/geoserver/rest/layers/".$layer."/styles";
         $ch = curl_init( $url );
@@ -393,6 +476,12 @@
     }
 
 
+    /**
+     * Permet de supprimer un style affecté à une layer
+     * @param string $layer
+     * @param string $style
+     * @return bool $ok
+     */
     function delStyleToLayer( $layer, $style ) {
         $url = "http://localhost:8080/geoserver/rest/layers/".$layer."/styles.json";
         $ch = curl_init( $url );
