@@ -49,6 +49,9 @@
 
 <script type="text/javascript">
 
+    /**
+    Cette fonction permet de récupérer et afficher les layers d'un utilisateurs afin quels soit managés et qu'on puisse leur ajouter ou retirer des styles
+    */
     function layers() {
         $.ajax({
             url: '../getCapabilities.php',
@@ -168,6 +171,10 @@
         });
     }
 
+
+    /**
+    Récupère la liste des styles d'un utilisateur et les affiches sur la page afin qu'ils puissent être managés
+    */
     function styles () {
         $.ajax({
             url: "http://localhost:8080/geoserver/rest/workspaces/<?php echo $_SESSION['login']; ?>/styles.xml",
@@ -193,6 +200,10 @@
         });
     }
 
+
+    /**
+    Bascule un style de la section available à la section current (pour la layer sélectionné)
+    */
     function available( layer, style ) {
         $.ajax({
             url: "../model.php",
@@ -213,6 +224,10 @@
         });
     }
 
+
+    /**
+    Bascule un style de la section current à la section available (pour la layer sélectionné)
+    */
     function current( layer, style ) {
         $.ajax({
             url: "../model.php",
