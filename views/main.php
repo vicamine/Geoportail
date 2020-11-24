@@ -1,45 +1,55 @@
 <?php
     ob_start();
 ?>
-<?php if ( isset($_SESSION['id'])){ ?>
-    <p> <a href='/<?php echo $ROOT; ?>/index.php/addLayer' > Ajouter des layers ou des styles ! </a> </p>
-<?php } ?>
+<div id="content">
 
-<h2> Map </h2>
-<div id='map' class="map"></div>
+    <div id="mapSpace">
 
-<h3> Legende </h3>
-<div id="legende"> </div>
+    <?php if ( isset($_SESSION['id'])){ ?>
+        <p> <a href='/<?php echo $ROOT; ?>/index.php/addLayer' > Ajouter des layers ou des styles ! </a> </p>
+    <?php } ?>
 
-<h2> Features </h2>
-<div id='features'> </div>
+    <h2> Map </h2>
+    <div id='map' class="map"></div>
 
-<h2> Layer active </h2>
+        <h3> Legende </h3>
+        <div id="legende"> </div>
 
-<div id='active'>
-    <ul>
+        <h2> Features </h2>
+        <div id='features'> </div>
+        
+    </div>
+    <div id="dataSpace">
+        <h2> Layer active </h2>
 
-    </ul>
+        <div id='active'>
+            <ul>
+
+            </ul>
+        </div>
+
+        <h2> Capabilites </h2>
+
+        <div id='contenue'> </div>
+
+
+        <br/>
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+        <script>
+        <?php require 'map.js'; ?>
+        </script>
+
+        <script defer>
+        initMap();
+        capabilities();
+        </script>
+
+    </div>
+
 </div>
-
-<h2> Capabilites </h2>
-
-<div id='contenue'> </div>
-
-
-<br/>
-
-
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-<script>
-    <?php require 'map.js'; ?>
-</script>
-
-<script defer>
-    initMap();
-    capabilities();
-</script>
 
 <?php
     $content = ob_get_clean();
