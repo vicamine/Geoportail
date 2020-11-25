@@ -1,0 +1,85 @@
+#map {
+    height: 600px;
+    width: 1000px; 
+}
+
+#content{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: baseline;
+}
+
+
+#mapSpace{
+    margin-right: 1%;
+    max-width: 1010px;
+}
+
+#dataSpace{
+    margin: 0;
+}
+
+#mapSpace a{
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+}
+
+#mapSpace a::after{
+    content: '';
+    width: 0px;
+    height: 2px;
+    margin-top:1px;
+    display: block;
+    background-color: black;
+    transition: .4s ease 0s;
+}
+
+#mapSpace a:hover::after{
+    width: 100%;
+    transition: .4s ease 0s;
+}
+
+.level1 li{
+    list-style: none;
+    background-color: rgb(200,200,200);
+}
+
+.level1 li a{
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.level1 li a::after{
+    content: '';
+    width: 0px;
+    height: 2px;
+    margin-top:1px;
+    display: block;
+    background-color: black;
+    transition: .4s ease 0s;
+}
+
+.level1 a:hover::after{
+    width: 100%;
+    transition: .4s ease 0s;
+}
+
+#active li{
+    list-style: none;
+}
+
+#active input{
+    margin-left: 1%;
+}
+
+#active select{
+    margin-left: 1%;
+}
+
+#features{
+    max-width: 1000px;
+    overflow-x: auto;
+}

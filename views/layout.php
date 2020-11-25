@@ -5,16 +5,8 @@
         <meta name="description" content="Site de visualisation cartographique">
         <meta name="keywords" content="Géographie, Map, Carte, Nouvelle-Calédonie, NC">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/css/ol.css" type="text/css">
-        <style>
-            html{
-                font-family: Arial;
-            }
-            .map {
-                height: 400px;
-                width: 800px;
-                border: solid black 2px;
-            }
-        </style>
+        <link href="/<?php echo $ROOT;?>/views/css/master.css" rel="stylesheet">
+        <link href="/<?php echo $ROOT;?>/views/css/<?php echo $PATH;?>.css" rel="stylesheet">
         <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.4.3/build/ol.js"></script>
     </head>
     <body>

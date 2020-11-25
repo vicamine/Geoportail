@@ -62,13 +62,14 @@
     // converting shapefile into table and add them to DB.
     putenv("PGPASSWORD=".$password);
     $shpName = glob($target_dir."*.shp");
-    $shpNameMaj = glob($target_dir."*.shp");
+    $shpNameMaj = glob($target_dir."*.SHP");
     $all = array_merge($shpName, $shpNameMaj);
     foreach ($all as $value) {
         $tblname = strtolower(pathinfo($value)['filename']);
         $tblname = str_replace(' ', '_',$tblname);
         $tblname = str_replace('-', '_',$tblname);
         $tblname = str_replace('.', '_',$tblname);
+        $tblname = str_replace('%20', '_',$tblname);
         $tblname = $_SESSION['login'].'.'.$tblname;
         $file = basename( $value );
         $queries = "shp2pgsql -I -s "."4326"." -c ". $target_dir . $file ." ". $tblname ." | psql -h localhost -p 5432 -U postgres -d Geoportail";
@@ -83,7 +84,7 @@
 
     // clean Uploads directory
     removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
-    
+
     header('Location: /' .$ROOT. '/index.php/addLayer?type=shapefile&error='.$error);
 
 ?>
