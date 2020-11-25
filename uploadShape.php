@@ -84,7 +84,7 @@
 
     // clean Uploads directory
     removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
-    
+
     header('Location: /' .$ROOT. '/index.php/addLayer?type=shapefile&error='.$error);
 
 ?>
