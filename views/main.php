@@ -20,8 +20,18 @@
 
     </div>
     <div id="dataSpace">
-        <h2> Layer active </h2>
 
+        <h3> Fond de carte </h3>
+        <div id="fondCarte">
+            <select id="fond" name="fond" onchange="fondChange(this.value) ">
+                <option value="fond_de_carte_osm"> OpenStreetMap </option>
+                <option value="fond_de_carte_stamen_terrain"> Stamen - Terrain </option>
+                <option value="fond_de_carte_stamen_toner"> Stamen - Toner </option>
+                <option value="fond_de_carte_stamen_watercolor"> Stamen - Watercolor </option>
+            </select>
+        </div>
+
+        <h2> Layer active </h2>
         <div id='active'>
             <ul>
 
@@ -29,7 +39,6 @@
         </div>
 
         <h2> Capabilites </h2>
-
         <div id='contenue'> </div>
 
 

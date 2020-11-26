@@ -19,10 +19,36 @@ function initMap () {
         view: view
     });
 
+    // Fond de carte
     map.addLayer(new ol.layer.Tile({
         source: new ol.source.OSM(),
-        name: 'fond_de_carte'
+        name: 'fond_de_carte_osm'
     }));
+
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.Stamen({
+            layer: 'terrain',
+        }),
+        name: 'fond_de_carte_stamen_terrain',
+        visible: false
+    }));
+
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.Stamen({
+            layer: 'watercolor',
+        }),
+        name: 'fond_de_carte_stamen_watercolor',
+        visible: false
+    }));
+
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.Stamen({
+            layer: 'toner',
+        }),
+        name: 'fond_de_carte_stamen_toner',
+        visible: false
+    }));
+
 
     map.on('singleclick', function (evt) {
         document.getElementById('features').innerHTML = '';
@@ -289,4 +315,22 @@ function legende( layer, style ) {
     legende.src = 'http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer='+layer+'&style='+style+'&transparent=true';
     legende.setAttribute('id', 'z'+layer.replace(':', '__')+'Legende');
     document.querySelector('#legende').append(legende);
+}
+
+
+/**
+ Permet de changer le fond de carte d'OpenLayers
+ */
+function fondChange( fond ) {
+    var fondCarte = [ 'fond_de_carte_stamen_terrain', 'fond_de_carte_stamen_toner', 'fond_de_carte_stamen_watercolor', 'fond_de_carte_osm' ];
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') != undefined && fondCarte.indexOf( layer.get('name')) != -1 ) {
+            layer.setVisible(false);
+        }
+    });
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') != undefined && layer.get('name') == fond ) {
+            layer.setVisible(true);
+        }
+    });
 }
