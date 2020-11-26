@@ -1,47 +1,67 @@
 <?php
     ob_start();
 ?>
-<?php if ( isset($_SESSION['id'])){ ?>
-    <p> <a href='/<?php echo $ROOT; ?>/index.php/addLayer' > Ajouter des layers ou des styles ! </a> </p>
-<?php } ?>
+<div id="content">
 
-<div id="layer">
-    <?php if ( $action == 'Layer' ) { ?>
-        <h2> Détails </h2>
-        <div id="details"> </div>
+    <div id="left">
 
-        <h3> Available styles </h3>
-        <div id="availableStyle">
-            <ul> </ul>
+        <?php if ( isset($_SESSION['id'])){ ?>
+            <p> <a href='/<?php echo $ROOT; ?>/index.php/addLayer' > Ajouter des layers ou des styles ! </a> </p>
+        <?php } ?>
+
+        <h2> Gestion des Layers </h2>
+
+        <div class='layers'>
+
+            <form class='formulaire' action="<?php echo $URI; ?>" method="post">
+                <input type="submit" name="supprimer" value="Supprimer">
+                <br><br>
+            </form>
+
         </div>
 
-        <h3> Current styles </h3>
-        <div id="currentStyle">
-            <ul> </ul>
+        <h2> Gestion des Styles </h2>
+
+        <div class="styles">
+
+            <form class='formulaireStyle' action="<?php echo $URI; ?>" method="post">
+                <input type="submit" name="supprimerStyle" value="Supprimer">
+                <br><br>
+            </form>
+
         </div>
-    <?php } ?>
 
-</div>
+    </div>
 
-<h2> Gestion des Layers </h2>
+    <div id="layer">
+        <?php if ( $action == 'Layer' ) { ?>
+            <h2> Détails </h2>
+            <div id="details"> </div>
 
-<div class='layers'>
+            <div class="style">
 
-    <form class='formulaire' action="<?php echo $URI; ?>" method="post">
-        <input type="submit" name="supprimer" value="Supprimer">
-        <br><br>
-    </form>
+                <div class="availableStyle">
 
-</div>
+                    <h3> Available styles </h3>
+                    <div id="availableStyle">
+                        <ul> </ul>
+                    </div>
 
-<h2> Gestion des Styles </h2>
+                </div>
 
-<div class="styles">
+                <div class="currentStyle">
 
-    <form class='formulaireStyle' action="<?php echo $URI; ?>" method="post">
-        <input type="submit" name="supprimerStyle" value="Supprimer">
-        <br><br>
-    </form>
+                    <h3> Current styles </h3>
+                    <div id="currentStyle">
+                        <ul> </ul>
+                    </div>
+
+                </div>
+
+            </div>
+        <?php } ?>
+
+    </div>
 
 </div>
 
@@ -100,7 +120,6 @@
                                 li.append(link);
                                 li.setAttribute('id', style + 'Style');
                                 document.querySelector('#currentStyle ul').append(li);
-                                document.querySelector('#currentStyle ul').append(document.createElement('br'));
                             }
                         }
                         document.querySelector('#details').append( data );
@@ -122,7 +141,6 @@
                                         li.setAttribute('id', y[j].innerHTML + 'Style');
                                         li.append(link);
                                         document.querySelector('#availableStyle ul').append(li);
-                                        document.querySelector('#availableStyle ul').append(document.createElement('br'));
                                     }
                                 }
                             }
@@ -145,8 +163,6 @@
                                         li.setAttribute('id', z[j].innerHTML + 'Style');
                                         li.append(link);
                                         document.querySelector('#availableStyle ul').append(li);
-                                        document.querySelector('#availableStyle ul').append(document.createElement('br'));
-
                                     }
                                 }
                             }
