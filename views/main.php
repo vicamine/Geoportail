@@ -17,7 +17,7 @@
 
         <h2> Features </h2>
         <div id='features'> </div>
-        
+
     </div>
     <div id="dataSpace">
         <h2> Layer active </h2>

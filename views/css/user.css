@@ -1,0 +1,77 @@
+#content{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 100%;
+    max-height: 800px;
+}
+
+#left{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+#layer{
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: baseline;
+}
+
+.style{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin-top: 10px;
+    width: 100%;
+    max-height: 90%;
+}
+
+.style li{
+    list-style: none;
+    background-color: rgb(200,200,200);
+    padding: 1%;
+}
+
+.availableStyle{
+    margin-right: 1%;
+    min-width: 45%;
+}
+
+#availableStyle{
+    max-height: 95%;
+    overflow: auto;
+}
+
+.currentStyle{
+    min-width: 45%;
+}
+
+#currentStyle{
+    max-height: 95%;
+    overflow: auto;
+}
+
+#content a{
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+}
+
+#content a::after{
+    content: '';
+    width: 0px;
+    height: 2px;
+    margin-top: 1px;
+    display: block;
+    background-color: black;
+    transition: .4s ease 0s;
+}
+
+#content a:hover::after{
+    width: 100%;
+    transition: .4s ease 0s;
+}
