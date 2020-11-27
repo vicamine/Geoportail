@@ -83,3 +83,16 @@
     max-width: 1000px;
     overflow-x: auto;
 }
+
+#legende{
+    display: flex;
+    flex-direction: column;
+}
+
+#legende div{
+    margin-top: 1%;
+}
+
+em{
+    font-weight: bold;
+}
