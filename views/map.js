@@ -204,7 +204,6 @@ function addLay ( layername, style ) {
     layers.push(layer);
 
     var active = document.createElement('li');
-    active.innerHTML = layername;
     active.setAttribute('id', 'z'+layername.replace(':', '__'));
 
     var slider = document.createElement('input');
@@ -249,7 +248,7 @@ function addLay ( layername, style ) {
     bouton.setAttribute( 'onclick', js );
     active.append(bouton);
 
-    document.querySelector('#active ul').append(active);
+    document.querySelector('#z'+layername.replace(':', '__')+'Active').append(active);
 }
 
 
@@ -314,16 +313,18 @@ function opacityChange( opacity, layername ) {
 function legende( layer, style ) {
     var div = document.createElement('div');
     div.setAttribute('id', 'z'+layer.replace(':', '__')+'Div');
+    div.setAttribute('class', 'legendElem');
     var legende = document.createElement('img');
     legende.alt = 'Légende de la layer '+layer;
     legende.src = 'http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer='+layer+'&style='+style+'&transparent=true';
     legende.setAttribute('id', 'z'+layer.replace(':', '__')+'Legende');
     var sum = document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('sum');
+    sum = "<p>" + sum + "</p>";
     var name = document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('title');
-    div.innerHTML = "<em>"+ name + "</em><br>";
-    div.append(legende);
-    div.innerHTML += "<br>" + sum;
+    div.innerHTML = "<div><em>"+ name + "</em><br></div>";
+    div.innerHTML += "<div id=\"z"+ layer.replace(':', '__') +"Active\">" + sum + "</div>";
     document.querySelector('#legende').append(div);
+    document.querySelector( '#z'+layer.replace(':', '__')+'Div div').append(legende);
 }
 
 

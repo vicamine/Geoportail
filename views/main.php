@@ -31,13 +31,6 @@
             </select>
         </div>
 
-        <h2> Layer active </h2>
-        <div id='active'>
-            <ul>
-
-            </ul>
-        </div>
-
         <h2> Capabilites </h2>
         <div id='contenue'> </div>
 

@@ -67,15 +67,15 @@
     transition: .4s ease 0s;
 }
 
-#active li{
+#legende li{
     list-style: none;
 }
 
-#active input{
+#legende input{
     margin-left: 1%;
 }
 
-#active select{
+#legende select{
     margin-left: 1%;
 }
 
@@ -89,10 +89,30 @@
     flex-direction: column;
 }
 
-#legende div{
+.legendElem{
     margin-top: 1%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    border-bottom: 1px solid black;
 }
 
 em{
     font-weight: bold;
+}
+
+#legende div div:nth-child(2){
+    display: flex;
+    flex-direction: column;
+    margin-left: 1%;
+    flex: 2;
+}
+
+#legende div div:nth-child(1){
+    flex: 1;
+}
+
+#legende div div:nth-child(2) li{
+    margin-top: 1%;
 }
