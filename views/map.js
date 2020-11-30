@@ -19,10 +19,36 @@ function initMap () {
         view: view
     });
 
+    // Fond de carte
     map.addLayer(new ol.layer.Tile({
         source: new ol.source.OSM(),
-        name: 'fond_de_carte'
+        name: 'fond_de_carte_osm'
     }));
+
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.Stamen({
+            layer: 'terrain',
+        }),
+        name: 'fond_de_carte_stamen_terrain',
+        visible: false
+    }));
+
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.Stamen({
+            layer: 'watercolor',
+        }),
+        name: 'fond_de_carte_stamen_watercolor',
+        visible: false
+    }));
+
+    map.addLayer(new ol.layer.Tile({
+        source: new ol.source.Stamen({
+            layer: 'toner',
+        }),
+        name: 'fond_de_carte_stamen_toner',
+        visible: false
+    }));
+
 
     map.on('singleclick', function (evt) {
         document.getElementById('features').innerHTML = '';
@@ -109,13 +135,15 @@ function capabilities() {
                 link.setAttribute('href', "javascript:void(0);");
                 link.setAttribute('ondblclick', js);
                 layer.setAttribute('id', 'z'+name.replace(':', '__')+'Layer');
+                layer.setAttribute('sum', x[i].getElementsByTagName('Abstract')[0].innerHTML);
+                layer.setAttribute('title', x[i].getElementsByTagName('Title')[0].innerHTML)
                 var styles = x[i].getElementsByTagName('Style');
                 var wsName = name.substr(0, name.indexOf(':'));
                 if (x[i].getElementsByTagName('SRS').length > 0) {
-                    link.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
+                    link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML + ' | ' +
                     x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
                 } else if (x[i].getElementsByTagName('CRS').length > 0) {
-                    link.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
+                    link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML + ' | ' +
                     x[i].getElementsByTagName('CRS')[0].innerHTML + ' | ';
                 }
 
@@ -176,7 +204,6 @@ function addLay ( layername, style ) {
     layers.push(layer);
 
     var active = document.createElement('li');
-    active.innerHTML = layername;
     active.setAttribute('id', 'z'+layername.replace(':', '__'));
 
     var slider = document.createElement('input');
@@ -221,7 +248,7 @@ function addLay ( layername, style ) {
     bouton.setAttribute( 'onclick', js );
     active.append(bouton);
 
-    document.querySelector('#active ul').append(active);
+    document.querySelector('#z'+layername.replace(':', '__')+'Active').append(active);
 }
 
 
@@ -239,7 +266,7 @@ function removeLay ( layername ) {
                 del = document.querySelector('#'+'z'+layername.replace(':', '__'));
                 del.remove();
 
-                delLegend = document.querySelector('#z'+layername.replace(':', '__')+'Legende');
+                delLegend = document.querySelector('#z'+layername.replace(':', '__')+'Div');
                 if ( delLegend != null ) {
                     delLegend.remove();
                 }
@@ -284,9 +311,36 @@ function opacityChange( opacity, layername ) {
  Permet de récupérer la légende du style d'une layer ( GetLegendGraphic )
  */
 function legende( layer, style ) {
+    var div = document.createElement('div');
+    div.setAttribute('id', 'z'+layer.replace(':', '__')+'Div');
+    div.setAttribute('class', 'legendElem');
     var legende = document.createElement('img');
     legende.alt = 'Légende de la layer '+layer;
     legende.src = 'http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer='+layer+'&style='+style+'&transparent=true';
     legende.setAttribute('id', 'z'+layer.replace(':', '__')+'Legende');
-    document.querySelector('#legende').append(legende);
+    var sum = document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('sum');
+    sum = "<p>" + sum + "</p>";
+    var name = document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('title');
+    div.innerHTML = "<div><em>"+ name + "</em><br></div>";
+    div.innerHTML += "<div id=\"z"+ layer.replace(':', '__') +"Active\">" + sum + "</div>";
+    document.querySelector('#legende').append(div);
+    document.querySelector( '#z'+layer.replace(':', '__')+'Div div').append(legende);
+}
+
+
+/**
+ Permet de changer le fond de carte d'OpenLayers
+ */
+function fondChange( fond ) {
+    var fondCarte = [ 'fond_de_carte_stamen_terrain', 'fond_de_carte_stamen_toner', 'fond_de_carte_stamen_watercolor', 'fond_de_carte_osm' ];
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') != undefined && fondCarte.indexOf( layer.get('name')) != -1 ) {
+            layer.setVisible(false);
+        }
+    });
+    map.getLayers().forEach(function (layer) {
+        if (layer.get('name') != undefined && layer.get('name') == fond ) {
+            layer.setVisible(true);
+        }
+    });
 }
