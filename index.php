@@ -22,11 +22,7 @@
         logout_action($ROOT);
     }
     else if ($PATH == 'uploadShape') {
-        if (isset($_POST['Layer'])) {
-            uploadShape_action($_POST['Title'], $_POST['Abstract'], $_POST['Layer'], $ROOT );
-        }else{
             include 'uploadShape.php';
-        }
     }
     else if ($PATH == 'uploadStyle') {
         include 'uploadStyle.php';
@@ -81,7 +77,7 @@
                 addLayer_action($_GET['type'], $dataList, $URI, $ROOT, $PATH);
             }
             elseif (isset($_GET['error']) && isset($_GET['type'])) {
-                if ( ($_GET['error'] == 1 || $_GET['error'] == 2 ) && $_GET['type'] == 'shapefile') {
+                if ( ($_GET['error'] == 1 || $_GET['error'] == 2 || $_GET['error'] == 3 ) && $_GET['type'] == 'shapefile') {
                     $dataList['error'] = $_GET['error'];
                     addLayer_action($_GET['type'], $dataList, $URI, $ROOT, $PATH);
                 } else if ( $_GET['error'] == 0 ) {

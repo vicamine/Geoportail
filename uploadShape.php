@@ -67,6 +67,7 @@
     if (count($all) > 1) {
         removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
         $error = 2;
+        putenv('PGPASSWORD');
         header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error='.$error);
     }
     else {
@@ -78,30 +79,42 @@
             $tblname = str_replace('%20', '_',$tblname);
             $tblname = $_SESSION['login'].'.'.$tblname;
             $file = basename( $value );
-            $queries = "shp2pgsql -I -s "."4326"." -c ". $target_dir . $file ." ". $tblname ." | psql -h localhost -p 5432 -U postgres -d Geoportail";
+            if (strpos($_POST['Projection'], ':') == false) {
+                $projection = $_POST['Projection'];
+            }
+            else {
+                $projection = substr($_POST['Projection'], strpos($_POST['Projection'], ':'));
+            }
+            $queries = "shp2pgsql -I -s ".$projection." -c ". $target_dir . $file ." ". $tblname ." | psql -h localhost -p 5432 -U postgres -d Geoportail";
             $output = shell_exec($queries);
             if (stripos($output, 'rollback') == NULL){
                 $error = 0;
+                if (isset($_POST['Title'])){
+                    $title = $_POST['Title'];
+                }
+                else {
+                    $title = null;
+                }
+                if (isset($_POST['Abstract'])) {
+                    $abstract = $_POST['Abstract'];
+                }
+                else {
+                    $abstract = null;
+                }
+                $tblname = substr($tblname, strpos($tblname, '.')+1);
+                $res = publishLayerDB($tblname, $title, $abstract);
                 putenv('PGPASSWORD');
-                echo '<form action="uploadShape" method="post">
-                <input name="Layer" type="hidden" value="'.$tblname.'">
-                <label for="Title"> Title : </label>
-                <input type="text" id="Title" name="Title">
-                <br>
-                <label for="Abstract"> Abstract : </label>
-                <input type="text" id="Abstract" name="Abstract">
-                <br><br>
-                <input type="submit" value="Confirmer" required>
-                </form>';
+                removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
+                echo $res;
+                header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error='.$error);
             } else {
                 $error = 1;
+                putenv('PGPASSWORD');
                 removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
                 header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error='.$error);
             }
         }
     }
-
-    // clean Uploads directory
-    removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
+    header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error=3');
 
 ?>

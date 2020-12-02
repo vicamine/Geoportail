@@ -224,15 +224,27 @@
         }
         elseif ($type =='shapefile') {
             $form = '<form action="uploadShape" method="post" enctype="multipart/form-data">
-            	<p> Select zip to upload: </p>
+                <br>
+                <label for="Projection"> Projection EPSG (nombre): </label>
+                <input type="text" id="Projection" name="Projection" required>
+                <br>
+                <label for="Title"> Title : </label>
+                <input type="text" id="Title" name="Title">
+                <br>
+                <label for="Abstract"> Abstract : </label>
+                <input type="text" id="Abstract" name="Abstract">
+                <br>
+            	<label for="fileToUpload"> Select zip to upload: </label>
             	<input type="file" name="fileToUpload" id="fileToUpload">
             	<!-- <input type="file" name="files[]" id="files[]"> -->
-            	<input type="submit" value="Upload zip" name="submit">
+                <br><br>
+                <input type="submit" value="Confirmer" name="submit" >
             </form>';
         }
         elseif ($type == 'style') {
             $form = '<form action="uploadStyle" method="post" enctype="multipart/form-data">
-            	<p> Select zip to upload: </p>
+                <br>
+                <label for="fileToUpload"> Select zip to upload: </label>
             	<input type="file" name="fileToUpload" id="fileToUpload">
             	<!-- <input type="file" name="files[]" id="files[]"> -->
             	<input type="submit" value="Upload zip" name="submit">

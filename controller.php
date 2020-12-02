@@ -80,6 +80,9 @@
                     else if ( $dataList['error'] == 2 ){
                         $error = 'Vous ne pouvez uploader qu\'un seule shapefile à la fois !';
                     }
+                    else if ( $dataList['error'] == 3 ){
+                        $error = 'Aucun shapefile trouvé.';
+                    }
                 }
             }
             elseif ($type == 'style') {
@@ -115,17 +118,6 @@
 
     function API_action($request, $url) {
         include("API/wms.php");
-    }
-
-
-    function uploadShape_action($title, $abstract, $layer, $ROOT) {
-        if ($layer != null) {
-            $layer = substr($layer, strpos($layer, '.')+1);
-            $res = publishLayerDB( $layer, $title, $abstract );
-            $error = 0;
-        }
-        $type = 'shapefile';
-        header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error='.$error);
     }
 
 ?>
