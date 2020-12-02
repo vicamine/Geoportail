@@ -172,7 +172,7 @@
 
                     var layer = document.createElement('input');
                     var layerLabel = document.createElement('a');
-                    layerLabel.innerHTML = name.substr(name.indexOf(':')+1);
+                    layerLabel.innerHTML = x[i].getElementsByTagName('Title')[0].innerHTML;
                     href = '/<?php echo $ROOT; ?>/index.php/user?action=Layer&data='+x[i].getElementsByTagName('Name')[0].innerHTML;
                     layerLabel.setAttribute('href', href);
                     layer.type = 'checkbox';

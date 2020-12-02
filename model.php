@@ -340,14 +340,24 @@
      * @param array $dataList
      * @return string $result
      */
-    function publishLayerDB( $layerName, $dataList ) {
-        $payload = array('featureType' => array( 'name' => $layerName ));
-        $url = "http://localhost:8080/geoserver/rest/workspaces/".$dataList['login']."/datastores/".$dataList['store']."/featuretypes";
+    function publishLayerDB( $layerName, $title, $abstract ) {
+        $payload = '<featureType><name>'.$layerName.'</name>';
+
+        if ($title != null && $title != '') {
+            $payload .= '<title>'.$title.'</title>';
+        }
+        if ($abstract != null && $abstract != '') {
+            $payload .= '<abstract>'.$abstract.'</abstract>';
+        }
+
+        $payload .= '</featureType>';
+
+        $url = "http://localhost:8080/geoserver/rest/workspaces/".$_SESSION['login']."/datastores/".$_SESSION['login']."/featuretypes";
         $ch = curl_init( $url );
         curl_setopt($ch, CURLOPT_POST, True);
         curl_setopt($ch, CURLOPT_USERPWD, 'admin:geoserver');
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode($payload));
-        curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:application/json'));
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $payload);
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array('Content-Type:text/xml'));
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         $result = curl_exec($ch);
         curl_close($ch);
