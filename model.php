@@ -186,43 +186,7 @@
      * @return string $form
      */
     function getForm($type, $URI) {
-        if ($type == 'postgis') {
-            $form = '<form action="'.$URI.'" method="post">
-
-                <input name="type" type="hidden" value="postgis">
-
-                <h2> Store</h2>
-
-                <label for="store"> Nom du store : </label>
-                <input type="text" id="store" name="store" required>
-                <br>
-                <label for="description"> Description : </label>
-                <input type="text" id="description" name="description" required>
-
-                <h2> Information de connexion </h2>
-
-                <label for="host"> host : </label>
-                <input type="text" id="host" name="host" required>
-                <br>
-                <label for="port"> port : </label>
-                <input type="text" id="port" name="port" required>
-                <br>
-                <label for="database"> database : </label>
-                <input type="text" id="database" name="database" required>
-                <br>
-                <label for="schema"> schema : </label>
-                <input type="text" id="schema" name="schema" value="public" required>
-                <br>
-                <label for="user"> user : </label>
-                <input type="text" id="user" name="user" required>
-                <br>
-                <label for="password"> password : </label>
-                <input type="password" id="password" name="password" required>
-                <br>
-                <input type="submit" value="Ajouter la base de donnée" required>
-            </form>';
-        }
-        elseif ($type =='shapefile') {
+        if ($type =='shapefile') {
             $form = '<form action="uploadShape" method="post" enctype="multipart/form-data">
                 <br>
                 <label for="Projection"> Projection EPSG (nombre): </label>

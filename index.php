@@ -47,18 +47,8 @@
     else if(isset($_SESSION['id'])) {
         if($PATH == "addLayer"){
             if (isset($_POST['type'])) {
-                if ($_POST['type'] == 'postgis') {
-                    if (isset($_POST['store']) && isset($_POST['description']) && isset($_POST['host']) && isset($_POST['port'])
-                    && isset($_POST['database']) && isset($_POST['schema']) && isset($_POST['user']) && isset($_POST['password'])){
-                        $dataList = array('store' => $_POST['store'], 'description' => $_POST['description'], 'host' => $_POST['host'],
-                        'port' => $_POST['port'], 'database' => $_POST['database'], 'schema' => $_POST['schema'],
-                        'user' => $_POST['user'], 'password' => $_POST['password']);
-                        addLayer_action($_POST['type'], $dataList, $URI, $ROOT, $PATH);
-                    } else {
-                        addLayer_action($_POST['type'], null, $URI, $ROOT, $PATH);
-                    }
-                }
-                else if ( $_POST['type'] == 'shapefile' ) {
+                
+                if ( $_POST['type'] == 'shapefile' ) {
                     addLayer_action($_POST['type'], null, $URI, $ROOT, $PATH);
                 }
                 else if ( $_POST['type'] == 'style' ){
@@ -77,7 +67,7 @@
                 addLayer_action($_GET['type'], $dataList, $URI, $ROOT, $PATH);
             }
             elseif (isset($_GET['error']) && isset($_GET['type'])) {
-                if ( ($_GET['error'] == 1 || $_GET['error'] == 2 || $_GET['error'] == 3 ) && $_GET['type'] == 'shapefile') {
+                if ( ($_GET['error'] > 0 ) && $_GET['type'] == 'shapefile') {
                     $dataList['error'] = $_GET['error'];
                     addLayer_action($_GET['type'], $dataList, $URI, $ROOT, $PATH);
                 } else if ( $_GET['error'] == 0 ) {

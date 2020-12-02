@@ -52,24 +52,8 @@
     function addLayer_action($type, $dataList, $URI, $ROOT, $PATH) {
         if ($type != null) {
             $form = getForm($type, $URI);
-            if ($type == 'postgis') {
-                if ($dataList != null) {
-                    $login = $_SESSION['login'];
-                    $error = create_store_db($login, $dataList);
-                    if ($error) {
-                        echo "<script>alert(\"Base de donnée ajouté !\")</script>";
-                        $table = getTable($dataList);
-                        $dataList['login'] = $_SESSION['login'];
-                        foreach ($table as $value) {
-                            publishLayerDB( $value, $dataList );
-                        }
-                        $error = '';
-                    } else {
-                        $error = 'Database not added !';
-                    }
-                }
-            }
-            else if ($type == 'shapefile') {
+            
+            if ($type == 'shapefile') {
                 if (isset($dataList['error'])) {
                     if ( $dataList['error'] == 0 ) {
                         echo "<script>alert(\"Layer ajoutée !\")</script>";
@@ -82,6 +66,9 @@
                     }
                     else if ( $dataList['error'] == 3 ){
                         $error = 'Aucun shapefile trouvé.';
+                    }
+                    else if ( $dataList['error'] == 4 ){
+                        $error = 'Erreur lors de l\'ajout du ou des styles';
                     }
                 }
             }

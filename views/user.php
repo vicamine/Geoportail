@@ -98,10 +98,10 @@
                     if ( name == '<?php echo $layer; ?>' ) {
                         var data = document.createElement('p');
                         if (x[i].getElementsByTagName('SRS').length > 0) {
-                            data.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
+                            data.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML + ' | ' +
                             x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
                         } else if (x[i].getElementsByTagName('CRS').length > 0){
-                            data.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
+                            data.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML + ' | ' +
                             x[i].getElementsByTagName('CRS')[0].innerHTML + ' | ';
                         }
                         var styles = x[i].getElementsByTagName('Style');

@@ -65,12 +65,12 @@
     $shpNameMaj = glob($target_dir."*.SHP");
     $all = array_merge($shpName, $shpNameMaj);
     if (count($all) > 1) {
-        removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
         $error = 2;
-        putenv('PGPASSWORD');
-        header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error='.$error);
+    } else if ( count($all) == 0 ) {
+        $error = 3;
     }
     else {
+        $layer = '';
         foreach ($all as $value) {
             $tblname = strtolower(pathinfo($value)['filename']);
             $tblname = str_replace(' ', '_',$tblname);
@@ -103,19 +103,33 @@
                 }
                 $tblname = substr($tblname, strpos($tblname, '.')+1);
                 $res = publishLayerDB($tblname, $title, $abstract);
-                putenv('PGPASSWORD');
-                removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
-                echo $res;
-                header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error='.$error);
+                $layer = $tblname;
             } else {
                 $error = 1;
-                putenv('PGPASSWORD');
-                removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
-                header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error='.$error);
+            }
+            if ( $error == 0 ) {
+                $sldName = glob($target_dir."*.sld");
+                $sldNameMaj = glob($target_dir."*.SLD");
+                $allSld = array_merge($sldName, $sldNameMaj);
+                foreach ($allSld as $stl) {
+                    $res = publishStyle($stl);
+                    if ( $res ) {
+                        $style = pathinfo($stl)['filename'];
+                        $add = addStyleToLayer($layer, $style );
+                        if ($add != $style) {
+                            $error == 4;
+                        }
+                    }
+                    else {
+                        $error = 4;
+                    }
+                }
             }
         }
     }
+
+    putenv('PGPASSWORD');
     removeDirectory("C:/xampp/htdocs/Geoportail/Uploads");
-    header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error=3');
+    header('Location:/'.$ROOT.'/index.php/addLayer?type=shapefile&error='.$error);
 
 ?>
