@@ -98,10 +98,10 @@
                     if ( name == '<?php echo $layer; ?>' ) {
                         var data = document.createElement('p');
                         if (x[i].getElementsByTagName('SRS').length > 0) {
-                            data.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
+                            data.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML + ' | ' +
                             x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
                         } else if (x[i].getElementsByTagName('CRS').length > 0){
-                            data.innerHTML += name.substr(name.indexOf(':')+1) + ' | ' +
+                            data.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML + ' | ' +
                             x[i].getElementsByTagName('CRS')[0].innerHTML + ' | ';
                         }
                         var styles = x[i].getElementsByTagName('Style');
@@ -172,7 +172,7 @@
 
                     var layer = document.createElement('input');
                     var layerLabel = document.createElement('a');
-                    layerLabel.innerHTML = name.substr(name.indexOf(':')+1);
+                    layerLabel.innerHTML = x[i].getElementsByTagName('Title')[0].innerHTML;
                     href = '/<?php echo $ROOT; ?>/index.php/user?action=Layer&data='+x[i].getElementsByTagName('Name')[0].innerHTML;
                     layerLabel.setAttribute('href', href);
                     layer.type = 'checkbox';

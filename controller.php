@@ -12,7 +12,6 @@
 
         if($login != null && $password != null) {
             $user = isUser($login, $password);
-            //echo $user;
             if ($user != null) {
                 $_SESSION['id'] = $user['userid'];
                 $_SESSION['login'] = $user['login'];
@@ -53,45 +52,23 @@
     function addLayer_action($type, $dataList, $URI, $ROOT, $PATH) {
         if ($type != null) {
             $form = getForm($type, $URI);
-            if ($type == 'postgis') {
-                if ($dataList != null) {
-                    $login = $_SESSION['login'];
-                    $error = create_store_db($login, $dataList);
-                    if ($error) {
-                        echo "<script>alert(\"Base de donnée ajouté !\")</script>";
-                        $table = getTable($dataList);
-                        $dataList['login'] = $_SESSION['login'];
-                        foreach ($table as $value) {
-                            publishLayerDB( $value, $dataList );
-                        }
-                        $error = '';
-                    } else {
-                        $error = 'Database not added !';
-                    }
-                }
-            }
-            else if ($type == 'shapefile') {
+            
+            if ($type == 'shapefile') {
                 if (isset($dataList['error'])) {
-                    if (!$dataList['error']) {
-                        echo "<script>alert(\"Layers ajoutées !\")</script>";
-                        $error = '';
-                        include('database.php');
-                        $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
-                            'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
-                        $table = getTable($dataList);
-                        foreach ($table as $value) {
-                            $error = publishLayerDB( $value, $dataList );
-                        }
+                    if ( $dataList['error'] == 0 ) {
+                        echo "<script>alert(\"Layer ajoutée !\")</script>";
                     }
-                    else {
-                        include('database.php');
-                        $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
-                            'store' => $_SESSION['login'], 'schema' => $_SESSION['login'], 'login' => $_SESSION['login']);
-                        $table = getTable($dataList);
-                        foreach ($table as $value) {
-                            publishLayerDB( $value, $dataList );
-                        }
-                        $error = 'Layers not added or partially !';
+                    else if ( $dataList['error'] == 1 ) {
+                        $error = 'La layer est déja présente ou corrompue !';
+                    }
+                    else if ( $dataList['error'] == 2 ){
+                        $error = 'Vous ne pouvez uploader qu\'un seule shapefile à la fois !';
+                    }
+                    else if ( $dataList['error'] == 3 ){
+                        $error = 'Aucun shapefile trouvé.';
+                    }
+                    else if ( $dataList['error'] == 4 ){
+                        $error = 'Erreur lors de l\'ajout du ou des styles';
                     }
                 }
             }

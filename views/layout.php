@@ -30,7 +30,6 @@
             echo $content;
         } ?>
         </div>
-
         <footer>
             <h1>Dabrion Victor-Emmanuel (2020)</h1>
         </footer>

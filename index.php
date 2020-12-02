@@ -22,7 +22,7 @@
         logout_action($ROOT);
     }
     else if ($PATH == 'uploadShape') {
-        include 'uploadShape.php';
+            include 'uploadShape.php';
     }
     else if ($PATH == 'uploadStyle') {
         include 'uploadStyle.php';
@@ -47,27 +47,33 @@
     else if(isset($_SESSION['id'])) {
         if($PATH == "addLayer"){
             if (isset($_POST['type'])) {
-                if ($_POST['type'] == 'postgis') {
-                    if (isset($_POST['store']) && isset($_POST['description']) && isset($_POST['host']) && isset($_POST['port'])
-                    && isset($_POST['database']) && isset($_POST['schema']) && isset($_POST['user']) && isset($_POST['password'])){
-                        $dataList = array('store' => $_POST['store'], 'description' => $_POST['description'], 'host' => $_POST['host'],
-                        'port' => $_POST['port'], 'database' => $_POST['database'], 'schema' => $_POST['schema'],
-                        'user' => $_POST['user'], 'password' => $_POST['password']);
-                        addLayer_action($_POST['type'], $dataList, $URI, $ROOT, $PATH);
-                    } else {
-                        addLayer_action($_POST['type'], null, $URI, $ROOT, $PATH);
-                    }
-                }
-                else if ( $_POST['type'] == 'shapefile' ) {
+                
+                if ( $_POST['type'] == 'shapefile' ) {
                     addLayer_action($_POST['type'], null, $URI, $ROOT, $PATH);
                 }
                 else if ( $_POST['type'] == 'style' ){
                     addLayer_action($_POST['type'], null, $URI, $ROOT, $PATH);
                 }
+                else if ( $_POST['type'] == 'update' ) {
+                    $dataList = array();
+                    foreach ($_POST as $key => $value) {
+                        $dataList[$key] = $value;
+                    }
+                    addLayer_action(null, $dataList, $URI, $ROOT, $PATH);
+                }
             }
-            else if ( isset($_GET['type']) && isset($_GET['error'])) {
-                $dataList['error'] = $_GET['error'];
+            else if ( isset($_GET['type']) && isset($_GET['error']) && isset($_GET['layers']) ) {
+                $dataList = array( 'error' => $_GET['error'], 'lays' => $_GET['layers'] );
                 addLayer_action($_GET['type'], $dataList, $URI, $ROOT, $PATH);
+            }
+            elseif (isset($_GET['error']) && isset($_GET['type'])) {
+                if ( ($_GET['error'] > 0 ) && $_GET['type'] == 'shapefile') {
+                    $dataList['error'] = $_GET['error'];
+                    addLayer_action($_GET['type'], $dataList, $URI, $ROOT, $PATH);
+                } else if ( $_GET['error'] == 0 ) {
+                    $dataList['error'] = $_GET['error'];
+                    addLayer_action($_GET['type'], $dataList, $URI, $ROOT, $PATH);
+                }
             }
             else {
                 addLayer_action(null, null, $URI, $ROOT, $PATH);
