@@ -177,19 +177,17 @@ function capabilities() {
  */
 function addLay ( layername, style ) {
     var layer;
-    if ( style == "" ) {
-        map.addLayer( layer = new ol.layer.Image ({
-            visible: true,
-            name: layername,
-            source: new ol.source.ImageWMS({
-                url: '../getMap.php',
-                params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?'},
-                serverType: 'geoserver',
-            }),
-            zIndex: layers.length+1
-        }));
-    }
-    legende( layername, style );
+    map.addLayer( layer = new ol.layer.Image ({
+        visible: true,
+        name: layername,
+        source: new ol.source.ImageWMS({
+            url: '../getMap.php',
+            params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?'},
+            serverType: 'geoserver',
+        }),
+        zIndex: layers.length+1
+    }));
+    legende( layername );
 
     layers.push(layer);
 
@@ -314,6 +312,8 @@ function styleChange( style, layername ) {
                     serverType: 'geoserver',
                 });
                 layer.setSource(source);
+                var url = 'http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer='+layername+'&style='+style+'&transparent=true';
+                document.querySelector('#z'+layername.replace(':', '__')+'Legende').src = url;
             }
         }
     });
@@ -338,13 +338,13 @@ function opacityChange( opacity, layername ) {
 /**
  Permet de récupérer la légende du style d'une layer ( GetLegendGraphic )
  */
-function legende( layer, style ) {
+function legende( layer ) {
     var div = document.createElement('div');
     div.setAttribute('id', 'z'+layer.replace(':', '__')+'Div');
     div.setAttribute('class', 'legendElem');
     var legende = document.createElement('img');
     legende.alt = 'Légende de la layer '+layer;
-    legende.src = 'http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer='+layer+'&style='+style+'&transparent=true';
+    legende.src = 'http://localhost:8080/geoserver/wms?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer='+layer+'&transparent=true';
     legende.setAttribute('id', 'z'+layer.replace(':', '__')+'Legende');
     var sum = document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('sum');
     sum = "<p>" + sum + "</p>";
