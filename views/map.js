@@ -185,18 +185,8 @@ function addLay ( layername, style ) {
                 url: '../getMap.php',
                 params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?'},
                 serverType: 'geoserver',
-            })
-        }));
-    }
-    else {
-        map.addLayer( layer = new ol.layer.Image ({
-            visible: true,
-            name: layername,
-            source: new ol.source.ImageWMS({
-                url: '../getMap.php',
-                params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?', 'STYLES': style},
-                serverType: 'geoserver',
-            })
+            }),
+            zIndex: layers.length+1
         }));
     }
     legende( layername, style );
@@ -239,6 +229,24 @@ function addLay ( layername, style ) {
 
     active.append(select);
 
+    var up = document.createElement('input');
+    var jsUp = "moveUp(\""+layername+"\")";
+    up.setAttribute('id', layername.replace(':', '__') + 'Up');
+    up.setAttribute('name', layername);
+    up.type = 'button';
+    up.value = 'up';
+    up.setAttribute( 'onclick', jsUp );
+    active.append(up);
+
+    var down = document.createElement('input');
+    var jsDown = "moveDown(\""+layername+"\")";
+    down.setAttribute('id', layername.replace(':', '__') + 'Down');
+    down.setAttribute('name', layername);
+    down.type = 'button';
+    down.value = 'down';
+    down.setAttribute( 'onclick', jsDown );
+    active.append(down);
+
     var js = "removeLay(\""+layername+"\")";
     var bouton = document.createElement('input');
     bouton.setAttribute('id', layername.replace(':', '__')+'Delete');
@@ -257,9 +265,11 @@ function addLay ( layername, style ) {
  */
 function removeLay ( layername ) {
     var toDelete;
+    var actualZ;
     map.getLayers().forEach(function (layer) {
         if (layer != null) {
             if ( layer.get('name') != undefined & layer.get('name') == layername ) {
+                actualZ = layer.getZIndex();
                 map.removeLayer(layer);
                 document.getElementById('features').innerHTML = '';
 
@@ -281,6 +291,13 @@ function removeLay ( layername ) {
             }
         }
     });
+    map.getLayers().forEach(function (layer) {
+        if (layer != null) {
+            if ( layer.getZIndex() > actualZ ) {
+                layer.setZIndex(layer.getZIndex()-1);
+            }
+        }
+    });
 }
 
 
@@ -288,8 +305,19 @@ function removeLay ( layername ) {
  Permet de changer le style d'une layer en la supprimant puis la rajoutant avec le style demandé
  */
 function styleChange( style, layername ) {
-    removeLay(layername);
-    addLay(layername, style);
+    map.getLayers().forEach(function (layer) {
+        if (layer != null) {
+            if ( layer.get('name') != undefined & layer.get('name') == layername ) {
+                source = new ol.source.ImageWMS({
+                    url: '../getMap.php',
+                    params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?', 'STYLES': style},
+                    serverType: 'geoserver',
+                });
+                layer.setSource(source);
+            }
+        }
+    });
+
 }
 
 
@@ -343,4 +371,62 @@ function fondChange( fond ) {
             layer.setVisible(true);
         }
     });
+}
+
+
+/**
+ Permet de faire monter une layer d'un niveau
+ */
+function moveUp( layername ) {
+    var actualZ;
+    var actualLay;
+    var swapLay;
+    map.getLayers().forEach(function (layer) {
+        if (layer != null) {
+            if ( layer.get('name') != undefined & layer.get('name') == layername ) {
+                actualZ = layer.getZIndex();
+                actualLay = layer;
+            }
+        }
+    });
+    if ( actualZ != layers.length ) {
+        map.getLayers().forEach(function (layer) {
+            if (layer != null) {
+                if ( layer.getZIndex() == actualZ+1 ) {
+                    swapLay = layer;
+                }
+            }
+        });
+        actualLay.setZIndex(actualZ+1);
+        swapLay.setZIndex(actualZ);
+    }
+}
+
+
+/**
+ Permet de faire descendre une layer d'un niveau
+ */
+function moveDown( layername ) {
+    var actualZ;
+    var actualLay;
+    var swapLay;
+    map.getLayers().forEach(function (layer) {
+        if (layer != null) {
+            if ( layer.get('name') != undefined & layer.get('name') == layername ) {
+                actualZ = layer.getZIndex();
+                actualLay = layer;
+            }
+        }
+    });
+    if ( actualZ != 1 ) {
+        map.getLayers().forEach(function (layer) {
+            if (layer != null) {
+                if ( layer.getZIndex() == actualZ-1 ) {
+                    swapLay = layer;
+                }
+            }
+        });
+        actualLay.setZIndex(actualZ-1);
+        swapLay.setZIndex(actualZ);
+    }
 }
