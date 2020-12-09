@@ -184,28 +184,28 @@
                     privacy.name = 'privacy'+name;
                     privacy.onclick = function () { privacySwitch(this) };
                     privacy.setAttribute('id', 'privacy' + x[i].getElementsByTagName('Name')[0].innerHTML );
-                    $.ajax({
-                        url: "../model.php",
-                        type: "POST",
-                        async: false,
-                        data: {
-                            action: "getPrivacy",
-                            layer: x[i].getElementsByTagName('Name')[0].innerHTML,
-                        },
-                        success: function(res) {
-                            console.log(res);
-                            if ( res == 't' ) {
-                                privacy.value = 'public';
-                            }
-                            else {
-                                privacy.value = 'private';
-                            }
-                        }
-                    });
                     document.querySelector('.formulaire').append(layer);
                     document.querySelector('.formulaire').append(layerLabel);
                     document.querySelector('.formulaire').append(privacy);
                     document.querySelector('.formulaire').append(document.createElement('br'));
+                    $.ajax({
+                        url: "../model.php",
+                        type: "POST",
+                        data: {
+                            action: "getPrivacy",
+                            layer: x[i].getElementsByTagName('Name')[0].innerHTML,
+                        },
+                        success: function(result) {
+                            if ( result[0] == 't' ) {
+                                lay = document.getElementById('privacy' + result.substr(1));
+                                lay.value = 'public';
+                            }
+                            else {
+                                lay = document.getElementById('privacy' + result.substr(1));
+                                lay.value = 'private';
+                            }
+                        }
+                    });
                 }
             }
         });

@@ -24,7 +24,7 @@
         }
         else if ( $_POST['action'] == 'getPrivacy' ) {
             $res = getPrivacy( $_POST['layer'] );
-            echo $res[0]['public'];
+            echo $res[0]['public'].$_POST['layer'];
         }
     }
 
@@ -559,4 +559,5 @@
         $res = doPreparedSelect( $query, $params );
         return $res;
     }
+    
 ?>
