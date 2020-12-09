@@ -179,8 +179,32 @@
                     layer.name = 'layer[]';
                     layer.value = x[i].getElementsByTagName('Name')[0].innerHTML;
                     layer.setAttribute('id', x[i].getElementsByTagName('Name')[0].innerHTML);
+                    var privacy = document.createElement('input');
+                    privacy.type = 'button';
+                    privacy.name = 'privacy'+name;
+                    privacy.onclick = function () { privacySwitch(this) };
+                    privacy.setAttribute('id', 'privacy' + x[i].getElementsByTagName('Name')[0].innerHTML );
+                    $.ajax({
+                        url: "../model.php",
+                        type: "POST",
+                        async: false,
+                        data: {
+                            action: "getPrivacy",
+                            layer: x[i].getElementsByTagName('Name')[0].innerHTML,
+                        },
+                        success: function(res) {
+                            console.log(res);
+                            if ( res == 't' ) {
+                                privacy.value = 'public';
+                            }
+                            else {
+                                privacy.value = 'private';
+                            }
+                        }
+                    });
                     document.querySelector('.formulaire').append(layer);
                     document.querySelector('.formulaire').append(layerLabel);
+                    document.querySelector('.formulaire').append(privacy);
                     document.querySelector('.formulaire').append(document.createElement('br'));
                 }
             }
@@ -262,6 +286,34 @@
                 }
             }
         });
+    }
+
+
+    function privacySwitch( elem ) {
+        if ( elem.value == 'private' ) {
+            elem.value = 'public';
+            $.ajax({
+                url: "../model.php",
+                type: "POST",
+                data: {
+                    action: "setPrivacy",
+                    layer: elem.name,
+                    public: true
+                }
+            });
+        }
+        else {
+            elem.value = 'private';
+            $.ajax({
+                url: "../model.php",
+                type: "POST",
+                data: {
+                    action: "setPrivacy",
+                    layer: elem.name,
+                    public: false
+                }
+            });
+        }
     }
 
     layers();

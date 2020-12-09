@@ -10,11 +10,7 @@
                 echo false;
             }
         }
-    }
-
-
-    if ( isset($_POST["action"]) ) {
-        if ( $_POST["action"] == "delStyleToLayer" ) {
+        else if ( $_POST["action"] == "delStyleToLayer" ) {
             $res = delStyleToLayer( $_POST["layer"], $_POST["style"] );
             if ( $res ) {
                 echo true;
@@ -22,6 +18,13 @@
             else {
                 echo false;
             }
+        }
+        else if ( $_POST['action'] == 'setPrivacy' ) {
+            setPrivacy($_POST['layer'], $_POST['public']);
+        }
+        else if ( $_POST['action'] == 'getPrivacy' ) {
+            $res = getPrivacy( $_POST['layer'] );
+            echo $res[0]['public'];
         }
     }
 
@@ -507,4 +510,53 @@
         return $ok;
     }
 
+
+    /**
+     * Permet d'ajouter une layer dans la table privacy pour y gérer ses droits.
+     * @param array $layerList
+     */
+    function addPrivacy( $layername ) {
+        $query = 'INSERT INTO admin.privacy (layername, userid, public) VALUES ( $1, $2, $3)';
+        $params = [ $_SESSION['login'].'.'.$layername, $_SESSION['id'], 'false' ];
+        doPreparedRequest( $query, $params );
+        return true;
+    }
+
+
+    /**
+     * Permet de supprimer une layer de la table privacy.
+     * @param array $layerList
+     */
+    function delPrivacy( $layerList ) {
+        foreach ( $layerList as $layer) {
+            $query = 'DELETE FROM admin.privacy WHERE layername = $1';
+            $params = [ str_replace(':', '.', $layer) ];
+            doPreparedRequest( $query, $params );
+        }
+    }
+
+
+    /**
+     * Permet de modifier les droits d'une layer dans la table privacy de la bdd postGis
+     * @param string $layerName
+     * @param bool $public
+     */
+    function setPrivacy( $layername, $public ) {
+        $query = 'UPDATE admin.privacy SET public=$1 WHERE layername=$2';
+        $params = [ $public, str_replace('privacy', '', str_replace(':', '.', $layername) ) ];
+        doPreparedRequest( $query, $params );
+        return true;
+    }
+
+
+    /**
+     * Permet de récupérer les droits d'une layer
+     *  @param string $layername
+     */
+    function getPrivacy( $layername ) {
+        $query = 'SELECT public FROM admin.privacy WHERE layername=$1';
+        $params = [ str_replace('privacy', '', str_replace(':', '.', $layername) ) ];
+        $res = doPreparedSelect( $query, $params );
+        return $res;
+    }
 ?>
