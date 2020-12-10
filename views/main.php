@@ -1,6 +1,7 @@
 <?php
     ob_start();
 ?>
+
 <div id="content">
 
     <div id="mapSpace">
@@ -19,11 +20,14 @@
         <div id='features'> </div>
 
     </div>
+    <div id="onglet">
+        <div id='contenue'> </div>
+    </div>
     <div id="dataSpace">
 
         <h3> Fond de carte </h3>
         <div id="fondCarte">
-            <select id="fond" name="fond" onchange="fondChange(this.value) ">
+            <select id="fond" name="fond" onchange="fondChange(this.value)">
                 <option value="fond_de_carte_osm"> OpenStreetMap </option>
                 <option value="fond_de_carte_stamen_terrain"> Stamen - Terrain </option>
                 <option value="fond_de_carte_stamen_toner"> Stamen - Toner </option>
@@ -31,8 +35,7 @@
             </select>
         </div>
 
-        <h2> Capabilites </h2>
-        <div id='contenue'> </div>
+        <h2 onclick='displayCapa()'> Capabilites </h2>
 
 
         <br/>
