@@ -108,6 +108,7 @@
                 $error = 1;
             }
             if ( $error == 0 ) {
+                addPrivacy($tblname);
                 $sldName = glob($target_dir."*.sld");
                 $sldNameMaj = glob($target_dir."*.SLD");
                 $allSld = array_merge($sldName, $sldNameMaj);

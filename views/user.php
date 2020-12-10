@@ -72,13 +72,14 @@
     /**
     Cette fonction permet de récupérer et afficher les layers d'un utilisateurs afin quels soit managés et qu'on puisse leur ajouter ou retirer des styles
     */
-    function layers() {
+    function layers( user ) {
         $.ajax({
             url: '../getCapabilities.php',
-            type: 'GET',
+            type: 'POST',
             data: {
                 url: 'http://localhost:8080/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities',
-                request: 'capabilities'
+                request: 'capabilities',
+                user: user
             },
             dataType: 'xml',
             success: function(res) {
@@ -179,9 +180,33 @@
                     layer.name = 'layer[]';
                     layer.value = x[i].getElementsByTagName('Name')[0].innerHTML;
                     layer.setAttribute('id', x[i].getElementsByTagName('Name')[0].innerHTML);
+                    var privacy = document.createElement('input');
+                    privacy.type = 'button';
+                    privacy.name = 'privacy'+name;
+                    privacy.onclick = function () { privacySwitch(this) };
+                    privacy.setAttribute('id', 'privacy' + x[i].getElementsByTagName('Name')[0].innerHTML );
                     document.querySelector('.formulaire').append(layer);
                     document.querySelector('.formulaire').append(layerLabel);
+                    document.querySelector('.formulaire').append(privacy);
                     document.querySelector('.formulaire').append(document.createElement('br'));
+                    $.ajax({
+                        url: "../model.php",
+                        type: "POST",
+                        data: {
+                            action: "getPrivacy",
+                            layer: x[i].getElementsByTagName('Name')[0].innerHTML,
+                        },
+                        success: function(result) {
+                            if ( result[0] == 't' ) {
+                                lay = document.getElementById('privacy' + result.substr(1));
+                                lay.value = 'public';
+                            }
+                            else {
+                                lay = document.getElementById('privacy' + result.substr(1));
+                                lay.value = 'private';
+                            }
+                        }
+                    });
                 }
             }
         });
@@ -264,7 +289,35 @@
         });
     }
 
-    layers();
+
+    function privacySwitch( elem ) {
+        if ( elem.value == 'private' ) {
+            elem.value = 'public';
+            $.ajax({
+                url: "../model.php",
+                type: "POST",
+                data: {
+                    action: "setPrivacy",
+                    layer: elem.name,
+                    public: true
+                }
+            });
+        }
+        else {
+            elem.value = 'private';
+            $.ajax({
+                url: "../model.php",
+                type: "POST",
+                data: {
+                    action: "setPrivacy",
+                    layer: elem.name,
+                    public: false
+                }
+            });
+        }
+    }
+
+    layers( '<?php if (isset($_SESSION['login'])) { echo $_SESSION['login']; } else { echo 'null'; } ?>' );
 
     styles();
 

@@ -52,7 +52,7 @@
     function addLayer_action($type, $dataList, $URI, $ROOT, $PATH) {
         if ($type != null) {
             $form = getForm($type, $URI);
-            
+
             if ($type == 'shapefile') {
                 if (isset($dataList['error'])) {
                     if ( $dataList['error'] == 0 ) {
@@ -92,6 +92,7 @@
         if ($action == 'Supprimer') {
             deleteLayer($data);
             geoDelete($data);
+            delPrivacy($data);
         }
         else if ($action == 'SupprimerStyle') {
             deleteStyle($data);
