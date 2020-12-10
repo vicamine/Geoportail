@@ -89,6 +89,7 @@ function capabilities( user ) {
         },
         dataType: 'xml',
         success: function(res) {
+            document.querySelector('#contenue').style.display = 'none';
             var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
             var workspaceList = [];
 
@@ -429,5 +430,15 @@ function moveDown( layername ) {
         });
         actualLay.setZIndex(actualZ-1);
         swapLay.setZIndex(actualZ);
+    }
+}
+
+
+function displayCapa() {
+    if ( document.querySelector('#contenue').style.display == 'none' ) {
+        document.querySelector('#contenue').style.display = 'block';
+    }
+    else {
+        document.querySelector('#contenue').style.display = 'none';
     }
 }
