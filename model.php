@@ -559,5 +559,13 @@
         $res = doPreparedSelect( $query, $params );
         return $res;
     }
-    
+
+
+    function getAllPrivate() {
+        $query = 'SELECT layername FROM admin.privacy where public=$1';
+        $params = [ 'false' ];
+        $res = doPreparedSelect( $query, $params );
+        return $res;
+    }
+
 ?>

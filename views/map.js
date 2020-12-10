@@ -77,14 +77,15 @@ function initMap () {
 /**
  Permet de récupérer un fichier getCapabilities, le parse et l'affiche sous forme d'arborescence.
  */
-function capabilities() {
+function capabilities( user ) {
 
     $.ajax({
         url: '../getCapabilities.php',
         type: 'GET',
         data: {
             url: 'http://localhost:8080/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities',
-            request: 'capabilities'
+            request: 'capabilities',
+            user: user,
         },
         dataType: 'xml',
         success: function(res) {

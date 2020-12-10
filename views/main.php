@@ -46,7 +46,7 @@
 
         <script defer>
         initMap();
-        capabilities();
+        capabilities( '<?php if (isset($_SESSION['login'])) { echo $_SESSION['login']; } else { echo 'null'; } ?>' );
         </script>
 
     </div>

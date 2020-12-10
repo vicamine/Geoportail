@@ -72,13 +72,14 @@
     /**
     Cette fonction permet de récupérer et afficher les layers d'un utilisateurs afin quels soit managés et qu'on puisse leur ajouter ou retirer des styles
     */
-    function layers() {
+    function layers( user ) {
         $.ajax({
             url: '../getCapabilities.php',
-            type: 'GET',
+            type: 'POST',
             data: {
                 url: 'http://localhost:8080/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities',
-                request: 'capabilities'
+                request: 'capabilities',
+                user: user
             },
             dataType: 'xml',
             success: function(res) {
@@ -316,7 +317,7 @@
         }
     }
 
-    layers();
+    layers( '<?php if (isset($_SESSION['login'])) { echo $_SESSION['login']; } else { echo 'null'; } ?>' );
 
     styles();
 
