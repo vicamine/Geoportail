@@ -54,7 +54,7 @@ function initMap () {
         document.getElementById('features').innerHTML = '';
 
         layers.forEach(function (layer) {
-            var viewResolution = /** @type {number} */ (view.getResolution());
+            var viewResolution = (view.getResolution());
             var url = layer.getSource().getFeatureInfoUrl(
                 evt.coordinate,
                 viewResolution,
