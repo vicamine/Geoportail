@@ -51,10 +51,9 @@ function initMap () {
 
 
     map.on('singleclick', function (evt) {
-        document.getElementById('features').innerHTML = '';
-
+        var features = '';
         layers.forEach(function (layer) {
-            var viewResolution = (view.getResolution());
+            var viewResolution = view.getResolution();
             var url = layer.getSource().getFeatureInfoUrl(
                 evt.coordinate,
                 viewResolution,
@@ -64,11 +63,13 @@ function initMap () {
             $.ajax({
                 url: url,
                 type: 'GET',
+                async: false,
                 success: function ( html ) {
-                    document.getElementById('features').innerHTML += html + '<br/>';
+                    features += html + '<br/>';
                 }
             });
         });
+        document.getElementById('features').innerHTML = features;
     });
 
 }
