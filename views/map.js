@@ -64,7 +64,7 @@ function initMap () {
                 url: url,
                 type: 'GET',
                 async: false,
-                timeout: 3000,
+                timeout: 2000,
                 success: function ( html ) {
                     features += html + '<br/>';
                 }
@@ -140,7 +140,8 @@ function capabilities( user ) {
                 link.setAttribute('ondblclick', js);
                 layer.setAttribute('id', 'z'+name.replace(':', '__')+'Layer');
                 layer.setAttribute('sum', x[i].getElementsByTagName('Abstract')[0].innerHTML);
-                layer.setAttribute('title', x[i].getElementsByTagName('Title')[0].innerHTML)
+                layer.setAttribute('title', x[i].getElementsByTagName('Title')[0].innerHTML);
+                layer.setAttribute('name', x[i].getElementsByTagName('Name')[0].innerHTML);
                 var styles = x[i].getElementsByTagName('Style');
                 var wsName = name.substr(0, name.indexOf(':'));
                 if (x[i].getElementsByTagName('SRS').length > 0) {
@@ -353,6 +354,11 @@ function legende( layer ) {
     var sum = document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('sum');
     sum = "<p>" + sum + "</p>";
     var name = document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('title');
+
+    if ( document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('name').substr(document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('name').indexOf(':')+1) != document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('title') ) {
+        name += ' / ' + document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('name').substr(document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('name').indexOf(':')+1);
+    }
+
     div.innerHTML = "<div><em>"+ name + "</em><br></div>";
     div.innerHTML += "<div id=\"z"+ layer.replace(':', '__') +"Active\">" + sum + "</div>";
     document.querySelector('#legende').append(div);
