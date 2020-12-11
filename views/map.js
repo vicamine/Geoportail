@@ -64,6 +64,7 @@ function initMap () {
                 url: url,
                 type: 'GET',
                 async: false,
+                timeout: 3000,
                 success: function ( html ) {
                     features += html + '<br/>';
                 }
