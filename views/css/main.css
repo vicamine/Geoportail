@@ -1,10 +1,14 @@
 
+.content {
+    margin: 0px;
+}
+
 .map {
     border: solid black 1px;
 }
 
 #map {
-    height: 600px;
+    height: 650px;
     min-width: 600px;
     width: 99%;
 }
@@ -13,12 +17,11 @@
     display: flex;
     flex-direction: row;
     justify-content: flex-start;
-    align-items: baseline;
+    align-items: flex-start;
 }
 
 
 #mapSpace{
-    margin-right: 1%;
     flex: 1;
 }
 
@@ -127,23 +130,23 @@ em{
 #contenue {
     overflow: auto;
     max-height: 650px;
-    border: 1px solid black;
     z-index: 2;
-    position: relative;
-    left:-550px;
-    width: 500px;
-    background-color: rgba(220,220,220,0.85);
     padding: 10px;
 }
 
 #onglet {
     display: block;
     z-index: 1;
-    width:1px;
-    height: 1px;
+    max-width: 600px;
+    border: 1px solid black;
+    background-color: rgba(240, 240, 240, 0.7);
 }
 
 .level1 {
     font-weight: bold;
+    padding: 5px;
+}
+
+#onglet h2{
     padding: 5px;
 }

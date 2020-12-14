@@ -9,8 +9,8 @@ var view;
  */
 function initMap () {
     view = new ol.View({
-        center: ol.proj.fromLonLat([ 0, 0 ]),
-        zoom: 2,
+        zoom: 7,
+        center: [ 165.568866, -21.425749 ],
         projection: 'EPSG:4326'
     });
 
@@ -91,7 +91,7 @@ function capabilities( user ) {
         },
         dataType: 'xml',
         success: function(res) {
-            document.querySelector('#contenue').style.display = 'none';
+            document.querySelector('#contenue').style.display = 'block';
             var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
             var workspaceList = [];
 
@@ -172,6 +172,7 @@ function capabilities( user ) {
                     document.querySelector('#'+wsName).append(layer);
                 }
             }
+            map.updateSize();
         }
     });
 }
@@ -181,6 +182,15 @@ function capabilities( user ) {
  Permet d'ajouter une layer sur la map et permet ensuite de la manager via une partie réservé
  */
 function addLay ( layername, style ) {
+    var adding = true;
+    layers.forEach(function( elem ) {
+        if ( elem.get('name') == layername ) {
+            adding = false;
+        }
+    });
+    if ( adding == false ) {
+        return;
+    }
     var layer;
     map.addLayer( layer = new ol.layer.Image ({
         visible: true,
@@ -445,8 +455,12 @@ function moveDown( layername ) {
 function displayCapa() {
     if ( document.querySelector('#contenue').style.display == 'none' ) {
         document.querySelector('#contenue').style.display = 'block';
+        document.querySelector('#onglet h2').innerHTML = 'X';
+        map.updateSize();
     }
     else {
         document.querySelector('#contenue').style.display = 'none';
+        document.querySelector('#onglet h2').innerHTML = '<';
+        map.updateSize();
     }
 }

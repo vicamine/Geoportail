@@ -6,11 +6,6 @@
 
     <div id="mapSpace">
 
-    <?php if ( isset($_SESSION['id'])){ ?>
-        <p> <a href='/<?php echo $ROOT; ?>/index.php/addLayer' > Ajouter des layers ou des styles ! </a> </p>
-    <?php } ?>
-
-    <h2> Map </h2>
     <div id='map' class="map"></div>
 
         <h3> Legende </h3>
@@ -21,25 +16,20 @@
 
     </div>
     <div id="onglet">
-        <div id='contenue'> </div>
+        <h2 onclick='displayCapa()'> X </h2>
+        <div id='contenue'>
+            <h3> Fond de carte </h3>
+            <div id="fondCarte">
+                <select id="fond" name="fond" onchange="fondChange(this.value)">
+                    <option value="fond_de_carte_osm"> OpenStreetMap </option>
+                    <option value="fond_de_carte_stamen_terrain"> Stamen - Terrain </option>
+                    <option value="fond_de_carte_stamen_toner"> Stamen - Toner </option>
+                    <option value="fond_de_carte_stamen_watercolor"> Stamen - Watercolor </option>
+                </select>
+            </div>
+        </div>
     </div>
     <div id="dataSpace">
-
-        <h3> Fond de carte </h3>
-        <div id="fondCarte">
-            <select id="fond" name="fond" onchange="fondChange(this.value)">
-                <option value="fond_de_carte_osm"> OpenStreetMap </option>
-                <option value="fond_de_carte_stamen_terrain"> Stamen - Terrain </option>
-                <option value="fond_de_carte_stamen_toner"> Stamen - Toner </option>
-                <option value="fond_de_carte_stamen_watercolor"> Stamen - Watercolor </option>
-            </select>
-        </div>
-
-        <h2 onclick='displayCapa()'> Capabilites </h2>
-
-
-        <br/>
-
 
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 
