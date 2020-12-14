@@ -16,5 +16,14 @@
             $file = file_get_contents($url);
             echo $file;
         }
+        else if ($_GET['REQUEST'] == 'GetLegendGraphic') {
+            $url = explode('?', $_SERVER['REQUEST_URI'])[1];
+            $url = $_GET['DOMAIN'].'?'.$url;
+            $image = imagecreatefrompng($url);
+            imagealphablending($image, false);
+            imagesavealpha($image, true);
+            header('Content-type: image/png');
+            imagepng($image);
+        }
     }
 ?>
