@@ -8,6 +8,9 @@
 
     <div id='map' class="map"></div>
 
+        <a id="export"> Download PNG </a>
+        <a id="image-download" download="map.png"></a>
+
         <h3> Legende </h3>
         <div id="legende"> </div>
 

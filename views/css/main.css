@@ -150,3 +150,24 @@ em{
 #onglet h2{
     padding: 5px;
 }
+
+#export{
+    color: black;
+    text-decoration: none;
+    display: inline-block;
+}
+
+#export::after{
+    content: '';
+    width: 0px;
+    height: 2px;
+    margin-top:1px;
+    display: block;
+    background-color: black;
+    transition: .4s ease 0s;
+}
+
+#export:hover::after{
+    width: 100%;
+    transition: .4s ease 0s;
+}
