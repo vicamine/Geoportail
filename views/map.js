@@ -327,7 +327,7 @@ function styleChange( style, layername ) {
                     serverType: 'geoserver',
                 });
                 layer.setSource(source);
-                var url = '../getMap.php?REQUEST=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer='+layername+'&style='+style+'&transparent=true&DOMAIN=http://localhost:8080/geoserver/wms';
+                var url = '../getMap.php?REQUEST=GetLegendGraphic&SERVICE=wms&FORMAT=image%2Fpng&WIDTH=20&HEIGHT=20&LAYER='+layername+'&STYLE='+style+'&TRANSPARENT=true&DOMAIN=http://localhost:8080/geoserver/wms';
                 document.querySelector('#z'+layername.replace(':', '__')+'Legende').src = url;
             }
         }
@@ -359,7 +359,7 @@ function legende( layer ) {
     div.setAttribute('class', 'legendElem');
     var legende = document.createElement('img');
     legende.alt = 'Légende de la layer '+layer;
-    legende.src = '../getMap.php?REQUEST=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer='+layer+'&transparent=true&DOMAIN=http://localhost:8080/geoserver/wms';
+    legende.src = '../getMap.php?REQUEST=GetLegendGraphic&SERVICE=wms&FORMAT=image%2Fpng&WIDTH=20&HEIGHT=20&LAYER='+layer+'&TRANSPARENT=true&DOMAIN=http://localhost:8080/geoserver/wms';
     legende.setAttribute('id', 'z'+layer.replace(':', '__')+'Legende');
     var sum = document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('sum');
     sum = "<p>" + sum + "</p>";

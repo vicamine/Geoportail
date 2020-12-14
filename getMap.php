@@ -18,7 +18,7 @@
         }
         else if ($_GET['REQUEST'] == 'GetLegendGraphic') {
             $url = explode('?', $_SERVER['REQUEST_URI'])[1];
-            $url = $_GET['DOMAIN'].'?'.$url;
+            $url = str_replace('"', '', $_GET['DOMAIN']).'?'.$url;
             $image = imagecreatefrompng($url);
             imagealphablending($image, false);
             imagesavealpha($image, true);
