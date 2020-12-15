@@ -11,6 +11,25 @@
         <a id="export"> Download PNG </a>
         <a id="image-download" download="map.png"></a>
 
+        <form class="form">
+            <label>Page size </label>
+            <select id="format">
+                <option value="a0">A0 (slow)</option>
+                <option value="a1">A1</option>
+                <option value="a2">A2</option>
+                <option value="a3">A3</option>
+                <option value="a4" selected>A4</option>
+                <option value="a5">A5 (fast)</option>
+            </select>
+            <label>Resolution </label>
+            <select id="resolution">
+                <option value="72">72 dpi (fast)</option>
+                <option value="150">150 dpi</option>
+                <option value="300">300 dpi (slow)</option>
+            </select>
+            <button id="exportPDF">Export PDF</button>
+        </form>
+
         <h3> Legende </h3>
         <div id="legende"> </div>
 
@@ -35,7 +54,8 @@
     <div id="dataSpace">
 
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
+        
         <script>
         <?php require 'map.js'; ?>
         </script>
