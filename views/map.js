@@ -483,6 +483,9 @@ function moveDown( layername ) {
 }
 
 
+/**
+ Permet de faire apparaitre la liste des layers dans un onglet rétractable
+ */
 function displayCapa() {
     if ( document.querySelector('#contenue').style.display == 'none' ) {
         document.querySelector('#contenue').style.display = 'block';
