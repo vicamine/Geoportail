@@ -43,6 +43,7 @@
             <h3> Fond de carte </h3>
             <div id="fondCarte">
                 <select id="fond" name="fond" onchange="fondChange(this.value)">
+                    <option value="fond_de_carte_georep"> Georep </option>
                     <option value="fond_de_carte_osm"> OpenStreetMap </option>
                     <option value="fond_de_carte_stamen_terrain"> Stamen - Terrain </option>
                     <option value="fond_de_carte_stamen_toner"> Stamen - Toner </option>
@@ -55,9 +56,9 @@
 
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.2/jspdf.min.js"></script>
-        
+
         <script>
-        <?php require 'map.js'; ?>
+            <?php require 'map.js'; ?>
         </script>
 
         <script defer>
