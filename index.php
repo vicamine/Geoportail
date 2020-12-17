@@ -30,6 +30,9 @@
     else if ($PATH == 'main') {
         main_action( $ROOT, $PATH );
     }
+    else if ( $PATH == 'sos' ) {
+        sos_action( $URI, $ROOT, $PATH );
+    }
     else if ($PATH == 'login') {
         if(isset($_POST['login']) && isset($_POST['password'])){
             login_action($_POST['login'], $_POST['password'], $URI, $ROOT, $PATH);
@@ -47,7 +50,7 @@
     else if(isset($_SESSION['id'])) {
         if($PATH == "addLayer"){
             if (isset($_POST['type'])) {
-                
+
                 if ( $_POST['type'] == 'shapefile' ) {
                     addLayer_action($_POST['type'], null, $URI, $ROOT, $PATH);
                 }

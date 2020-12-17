@@ -108,4 +108,8 @@
         include("API/wms.php");
     }
 
+
+    function sos_action( $URI, $ROOT, $PATH ) {
+        include("views/sos.php");
+    }
 ?>
