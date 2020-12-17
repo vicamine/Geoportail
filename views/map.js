@@ -249,21 +249,14 @@ function capabilities( user ) {
                 layer.setAttribute('name', x[i].getElementsByTagName('Name')[0].innerHTML);
                 var styles = x[i].getElementsByTagName('Style');
                 var wsName = name.substr(0, name.indexOf(':'));
-                if (x[i].getElementsByTagName('SRS').length > 0) {
-                    link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML + ' | ' +
-                    x[i].getElementsByTagName('SRS')[0].innerHTML + ' | ';
-                } else if (x[i].getElementsByTagName('CRS').length > 0) {
-                    link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML + ' | ' +
-                    x[i].getElementsByTagName('CRS')[0].innerHTML + ' | ';
-                }
+
+                link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML
 
                 var str = '';
                 for ( elem of styles) {
                     if (str == '') {
-                        link.innerHTML += elem.getElementsByTagName('Name')[0].innerHTML;
                         str += elem.getElementsByTagName('Name')[0].innerHTML;
                     } else {
-                        link.innerHTML += ', ' + elem.getElementsByTagName('Name')[0].innerHTML;
                         str += ', ' + elem.getElementsByTagName('Name')[0].innerHTML;
                     }
                 }
