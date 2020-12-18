@@ -561,6 +561,9 @@
     }
 
 
+    /**
+     * Permet de récupérer la liste de toutes les layers privées
+     */
     function getAllPrivate() {
         $query = 'SELECT layername FROM admin.privacy where public=$1';
         $params = [ 'false' ];
