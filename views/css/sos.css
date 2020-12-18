@@ -1,0 +1,10 @@
+
+.map {
+    border: solid black 1px;
+}
+
+#map {
+    height: 650px;
+    min-width: 600px;
+    width: 99%;
+}

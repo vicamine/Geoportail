@@ -9,7 +9,10 @@
     document.addEventListener('DOMContentLoaded', function () {
         $.ajax({
             url: '../sosAPI.php',
-            type: 'POST',
+            type: 'GET',
+            data: {
+                request: 'result',
+            },
             dataType: 'json',
             success: function(res) {
                 var valeur = [];
@@ -41,7 +44,29 @@
         });
     });
 </script>
+
 <div id="container" style="width:100%; height:400px;"></div>
+
+<h3> Fond de carte </h3>
+<div id="fondCarte">
+    <select id="fond" name="fond" onchange="fondChange(this.value)">
+        <option value="fond_de_carte_georep"> Georep </option>
+        <option value="fond_de_carte_osm" selected> OpenStreetMap </option>
+        <option value="fond_de_carte_stamen_terrain"> Stamen - Terrain </option>
+        <option value="fond_de_carte_stamen_toner"> Stamen - Toner </option>
+        <option value="fond_de_carte_stamen_watercolor"> Stamen - Watercolor </option>
+    </select>
+</div>
+
+<div id='map' class="map"></div>
+
+<script>
+    <?php require 'mapSOS.js'; ?>
+</script>
+
+<script defer>
+    initMap();
+</script>
 
 <?php
     $content = ob_get_clean();
