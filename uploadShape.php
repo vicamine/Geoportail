@@ -1,5 +1,5 @@
 <?php
-
+    require_once "database.php";
     $file_parts = pathinfo($_FILES["fileToUpload"]["name"]);
     $file = $file_parts['filename'];
     $file = str_replace(' ', '_', $file);
@@ -85,7 +85,7 @@
             else {
                 $projection = substr($_POST['Projection'], strpos($_POST['Projection'], ':'));
             }
-            $queries = "shp2pgsql -I -s ".$projection." -c ". $target_dir . $file ." ". $tblname ." | psql -h localhost -p 5432 -U postgres -d Geoportail";
+            $queries = "shp2pgsql -I -s ".$projection." -c ". $target_dir . $file ." ". $tblname ." | psql -h localhost -p 5432 -U postgres -d ".$db_data;
             $output = shell_exec($queries);
             if (stripos($output, 'rollback') == NULL){
                 $error = 0;

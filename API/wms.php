@@ -1,7 +1,5 @@
 <?php
 
-    require_once 'model.php';
-
     $host = 'http://localhost:8080/geoserver/wms?';
     $finalUrl = $host.explode('?', $url)[1];
 
