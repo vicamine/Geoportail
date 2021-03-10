@@ -74,11 +74,10 @@
     */
     function layers( user ) {
         $.ajax({
-            url: '../getCapabilities.php',
+            url: '../wms_internal.php',
             type: 'POST',
             data: {
-                url: 'http://localhost:8080/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities',
-                request: 'capabilities',
+                REQUEST: 'capabilities',
                 user: user
             },
             dataType: 'xml',

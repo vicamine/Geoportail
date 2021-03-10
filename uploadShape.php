@@ -1,5 +1,5 @@
 <?php
-    require_once "database.php";
+    require_once "config.php";
     $file_parts = pathinfo($_FILES["fileToUpload"]["name"]);
     $file = $file_parts['filename'];
     $file = str_replace(' ', '_', $file);

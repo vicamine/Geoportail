@@ -29,7 +29,7 @@
             $success = insert_user($nom, $prenom, $login, $passwd);
             if ($success) {
                 create_workspace($login);
-                include('database.php');
+                include('config.php');
                 $dataList = array( 'host' => $host_data, 'port' => $port_data, 'database' => $db_data, 'user' => $user_data, 
                     'password' => $password_data,
                     'store' => $login, 'description' => 'Geoserver Database', 'schema' => $login, 'login' => $login);

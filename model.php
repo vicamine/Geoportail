@@ -34,7 +34,7 @@
      * @return mysqli
      */
     function connectToDB($db){
-        include('database.php');
+        include('config.php');
         if ($db == "data") {
             $sql = pg_connect('host='.$host_data.' port='.$port_data.' dbname='.$db_data.' user='.$user_data.' password='.$password_data );
         }

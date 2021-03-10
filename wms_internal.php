@@ -1,7 +1,7 @@
 <?php
 
     require_once 'model.php';
-    require_once 'wms_config.php';
+    require_once 'config.php';
     
     if (isset($_GET['DOMAIN']) && isset($_GET['TYPE'])) {
         if ($_GET['REQUEST'] == 'GetMap') {
