@@ -1,6 +1,6 @@
 <?php
-
-    $host = 'http://localhost:8080/geoserver/wms?';
+    require_once 'wms_config.php';
+    $host = $domain;
     $finalUrl = $host.explode('?', $url)[1];
 
     if ( strtolower($request) == 'getcapabilities') {

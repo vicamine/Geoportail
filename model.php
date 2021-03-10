@@ -1,7 +1,5 @@
 <?php
 
-    require_once('database.php');
-
     if ( isset($_POST["action"]) ) {
         if ( $_POST["action"] == "addStyleToLayer" ) {
             $res = addStyleToLayer( $_POST["layer"], $_POST["style"] );
@@ -37,7 +35,12 @@
      */
     function connectToDB($db){
         include('database.php');
-        $sql = pg_connect('host='.$host.' port='.$port.' dbname='.$db.' user='.$user.' password='.$password );
+        if ($db == "data") {
+            $sql = pg_connect('host='.$host_data.' port='.$port_data.' dbname='.$db_data.' user='.$user_data.' password='.$password_data );
+        }
+        else if ($db == "admin") {
+            $sql = pg_connect('host='.$host_admin.' port='.$port_admin.' dbname='.$db_admin.' user='.$user_admin.' password='.$password_admin );
+        }
         return $sql;
     }
 
@@ -88,8 +91,7 @@
      * @return mixed $rows
      */
     function isUser($login, $password){
-        global $db_admin;
-        $sql=connectToDB($db_admin);
+        $sql=connectToDB("admin");
         $result=pg_prepare($sql, "prepared_query", 'SELECT * FROM admin.user WHERE login=$1 AND password=$2');
         $result = pg_execute($sql, "prepared_query", array($login, $password));
         $rows = pg_fetch_assoc($result);
@@ -112,13 +114,12 @@
      * @return bool
      */
     function insert_user( $nom, $prenom, $login, $password ) {
-        global $db_admin;
         if ( !verification_login ($login)) {
             return false;
         } else {
             $query = 'INSERT INTO admin.user (nom, prenom, login, password) VALUES ( $1, $2, $3, $4 )';
             $params = [ $nom, $prenom, $login, $password ];
-            doPreparedRequest($db_admin, $query, $params );
+            doPreparedRequest("admin", $query, $params );
             create_schema($login);
             return true;
         }
@@ -129,13 +130,12 @@
      * @param string $login
      */
     function delete_user($login) {
-        global $db_admin;
         if ( verification_login ($login)) {
             return false;
         } else {
             $query = 'DELETE FROM admin.user WHERE login=$1';
             $params = [ $login ];
-            doPreparedRequest($db_admin, $query, $params );
+            doPreparedRequest("admin", $query, $params );
             delete_schema($login);
             return true;
         }
@@ -146,9 +146,8 @@
      * @param string $login
      */
     function create_schema($login) {
-        global $db_data;
         $query = 'CREATE SCHEMA '.$login;
-        $sql = connectToDB($db_data);
+        $sql = connectToDB("data");
         pg_query($sql, $query);
     }
 
@@ -157,9 +156,8 @@
      * @param string $login
      */
     function delete_schema($login) {
-        global $db_data;
         $query = 'DROP SCHEMA IF EXISTS '.$login.' CASCADE';
-        $sql = connectToDB($db_data);
+        $sql = connectToDB("data");
         pg_query($sql, $query);
     }
 
@@ -169,9 +167,8 @@
      * @return bool
      */
     function verification_login($login){
-        global $db_admin;
         $query = "SELECT * FROM admin.user WHERE login=$1";
-        $result = doPreparedSelect($db_admin, $query, array($login));
+        $result = doPreparedSelect("admin", $query, array($login));
         if (is_array($result)) {
             if (sizeof($result) == 0) {
                 return true;
@@ -360,7 +357,8 @@
     /**
      * Permet de publier une layer présente dans une base de données
      * @param string $layerName
-     * @param array $dataList
+     * @param string $title
+     * @param string $abstract
      * @return string $result
      */
     function publishLayerDB( $layerName, $title, $abstract ) {
@@ -411,8 +409,7 @@
      */
     function deleteLayer($layerList) {
         foreach ( $layerList as $layer) {
-            global $db_data;
-            $sql = connectToDB($db_data);
+            $sql = connectToDB("data");
             $query = 'DROP TABLE '.$_SESSION['login'].'.'.str_replace($_SESSION['login'].':', '', $layer).' CASCADE';
             $result = pg_query($query);
             disconnectFromDB($sql);
@@ -561,10 +558,9 @@
      * @param array $layerList
      */
     function addPrivacy( $layername ) {
-        global $db_admin;
         $query = 'INSERT INTO admin.privacy (layername, userid, public) VALUES ( $1, $2, $3)';
         $params = [ $_SESSION['login'].'.'.$layername, $_SESSION['id'], 'false' ];
-        doPreparedRequest($db_admin, $query, $params );
+        doPreparedRequest("admin", $query, $params );
         return true;
     }
 
@@ -574,11 +570,10 @@
      * @param array $layerList
      */
     function delPrivacy( $layerList ) {
-        global $db_admin;
         foreach ( $layerList as $layer) {
             $query = 'DELETE FROM admin.privacy WHERE layername = $1';
             $params = [ str_replace(':', '.', $layer) ];
-            doPreparedRequest($db_admin, $query, $params );
+            doPreparedRequest("admin", $query, $params );
         }
     }
 
@@ -589,10 +584,9 @@
      * @param bool $public
      */
     function setPrivacy( $layername, $public ) {
-        global $db_admin;
         $query = 'UPDATE admin.privacy SET public=$1 WHERE layername=$2';
         $params = [ $public, str_replace('privacy', '', str_replace(':', '.', $layername) ) ];
-        doPreparedRequest($db_admin, $query, $params );
+        doPreparedRequest("admin", $query, $params );
         return true;
     }
 
@@ -602,10 +596,9 @@
      *  @param string $layername
      */
     function getPrivacy( $layername ) {
-        global $db_admin;
         $query = 'SELECT public FROM admin.privacy WHERE layername=$1';
         $params = [ str_replace('privacy', '', str_replace(':', '.', $layername) ) ];
-        $res = doPreparedSelect($db_admin, $query, $params );
+        $res = doPreparedSelect("admin", $query, $params );
         return $res;
     }
 
@@ -614,10 +607,9 @@
      * Permet de récupérer la liste de toutes les layers privées
      */
     function getAllPrivate() {
-        global $db_admin;
         $query = 'SELECT layername FROM admin.privacy where public=$1';
         $params = [ 'false' ];
-        $res = doPreparedSelect($db_admin, $query, $params );
+        $res = doPreparedSelect("admin", $query, $params );
         return $res;
     }
 
