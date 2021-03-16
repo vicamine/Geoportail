@@ -34,8 +34,8 @@ function initMap () {
 
     map.addLayer(new ol.layer.Image({
         source: new ol.source.ImageWMS({
-            url: '../getMap.php',
-            params: {'LAYERS': '0', 'TILED': true, 'DOMAIN': 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?'},
+            url: '../wms_internal.php',
+            params: {'LAYERS': '0', 'TILED': true, 'DOMAIN': 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?', 'TYPE': 'fond_de_carte'},
             serverType: 'geoserver',
         }),
         name: 'fond_de_carte_georep'
@@ -187,11 +187,10 @@ function initMap () {
 function capabilities( user ) {
 
     $.ajax({
-        url: '../getCapabilities.php',
+        url: '../wms_internal.php',
         type: 'GET',
         data: {
-            url: 'http://localhost:8080/geoserver/wms?service=wms&version=1.1.1&request=GetCapabilities',
-            request: 'capabilities',
+            REQUEST: 'capabilities',
             user: user,
         },
         dataType: 'xml',
@@ -294,8 +293,8 @@ function addLay ( layername, style ) {
         visible: true,
         name: layername,
         source: new ol.source.ImageWMS({
-            url: '../getMap.php',
-            params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?'},
+            url: '../wms_internal.php',
+            params: {'LAYERS': layername, 'TILED': true},
             serverType: 'geoserver',
         }),
         zIndex: layers.length+1
@@ -420,12 +419,12 @@ function styleChange( style, layername ) {
         if (layer != null) {
             if ( layer.get('name') != undefined & layer.get('name') == layername ) {
                 source = new ol.source.ImageWMS({
-                    url: '../getMap.php',
-                    params: {'LAYERS': layername, 'TILED': true, 'DOMAIN': 'http://localhost:8080/geoserver/wms?', 'STYLES': style},
+                    url: '../wms_internal.php',
+                    params: {'LAYERS': layername, 'TILED': true, 'STYLES': style},
                     serverType: 'geoserver',
                 });
                 layer.setSource(source);
-                var url = '../getMap.php?REQUEST=GetLegendGraphic&SERVICE=wms&FORMAT=image%2Fpng&WIDTH=20&HEIGHT=20&LAYER='+layername+'&STYLE='+style+'&TRANSPARENT=true&DOMAIN=http://localhost:8080/geoserver/wms';
+                var url = '../wms_internal.php?REQUEST=GetLegendGraphic&SERVICE=wms&FORMAT=image%2Fpng&WIDTH=20&HEIGHT=20&LAYER='+layername+'&STYLE='+style+'&TRANSPARENT=true';
                 document.querySelector('#z'+layername.replace(':', '__')+'Legende').src = url;
             }
         }
@@ -457,7 +456,7 @@ function legende( layer ) {
     div.setAttribute('class', 'legendElem');
     var legende = document.createElement('img');
     legende.alt = 'Légende de la layer '+layer;
-    legende.src = '../getMap.php?REQUEST=GetLegendGraphic&SERVICE=wms&FORMAT=image%2Fpng&WIDTH=20&HEIGHT=20&LAYER='+layer+'&TRANSPARENT=true&DOMAIN=http://localhost:8080/geoserver/wms';
+    legende.src = '../wms_internal.php?REQUEST=GetLegendGraphic&SERVICE=wms&FORMAT=image%2Fpng&WIDTH=20&HEIGHT=20&LAYER='+layer+'&TRANSPARENT=true';
     legende.setAttribute('id', 'z'+layer.replace(':', '__')+'Legende');
     var sum = document.querySelector('#z'+layer.replace(':', '__')+'Layer').getAttribute('sum');
     sum = "<p>" + sum + "</p>";
