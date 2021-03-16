@@ -8,6 +8,10 @@
     $PATH = getCurrentPath($URI);
     $ROOT = explode("/",$URI)[1];
     $COMPLETE_PATH = getCompletePath($URI);
+    if($PATH == "index.php") {
+        header('Location: '.$URI."/main");
+        exit();
+    }
 
 
     if ($COMPLETE_PATH[0] == 'ows') {

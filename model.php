@@ -33,9 +33,14 @@
      * Permet de créer une connexion vers la base de données
      * @return mysqli
      */
-    function connectToDB(){
-        include('database.php');
-        $sql = pg_connect('host='.$host.' port='.$port.' dbname='.$dbname.' user='.$user.' password='.$password );
+    function connectToDB($db){
+        include('config.php');
+        if ($db == "data") {
+            $sql = pg_connect('host='.$host_data.' port='.$port_data.' dbname='.$db_data.' user='.$user_data.' password='.$password_data );
+        }
+        else if ($db == "admin") {
+            $sql = pg_connect('host='.$host_admin.' port='.$port_admin.' dbname='.$db_admin.' user='.$user_admin.' password='.$password_admin );
+        }
         return $sql;
     }
 
@@ -55,8 +60,8 @@
      * @param mixed $params
      * @return mixed $row
      */
-    function doPreparedSelect($requete, $params){
-        $sql=connectToDB();
+    function doPreparedSelect($db, $requete, $params){
+        $sql=connectToDB($db);
         $result=pg_prepare($sql, "prepared_query", $requete);
         $result = pg_execute($sql, "prepared_query", $params);
         $row = pg_fetch_all($result);
@@ -71,8 +76,8 @@
      * @param string $requete
      * @param mixed $params
      */
-    function doPreparedRequest($requete, $params){
-        $sql=connectToDB();
+    function doPreparedRequest($db, $requete, $params){
+        $sql=connectToDB($db);
         $result=pg_prepare($sql, "prepared_query", $requete);
         $result = pg_execute($sql, "prepared_query", $params);
         disconnectFromDB($sql);
@@ -86,7 +91,7 @@
      * @return mixed $rows
      */
     function isUser($login, $password){
-        $sql=connectToDB();
+        $sql=connectToDB("admin");
         $result=pg_prepare($sql, "prepared_query", 'SELECT * FROM admin.user WHERE login=$1 AND password=$2');
         $result = pg_execute($sql, "prepared_query", array($login, $password));
         $rows = pg_fetch_assoc($result);
@@ -114,11 +119,47 @@
         } else {
             $query = 'INSERT INTO admin.user (nom, prenom, login, password) VALUES ( $1, $2, $3, $4 )';
             $params = [ $nom, $prenom, $login, $password ];
-            doPreparedRequest( $query, $params );
+            doPreparedRequest("admin", $query, $params );
+            create_schema($login);
             return true;
         }
     }
 
+    /**
+     * Permet de supprimer un utilisateur dans la BDD
+     * @param string $login
+     */
+    function delete_user($login) {
+        if ( verification_login ($login)) {
+            return false;
+        } else {
+            $query = 'DELETE FROM admin.user WHERE login=$1';
+            $params = [ $login ];
+            doPreparedRequest("admin", $query, $params );
+            delete_schema($login);
+            return true;
+        }
+    }
+
+    /**
+     * Permet de créer un schéma dans la BDD de data
+     * @param string $login
+     */
+    function create_schema($login) {
+        $query = 'CREATE SCHEMA '.$login;
+        $sql = connectToDB("data");
+        pg_query($sql, $query);
+    }
+
+    /**
+     * Permet de supprimer un schéma dans la BDD data
+     * @param string $login
+     */
+    function delete_schema($login) {
+        $query = 'DROP SCHEMA IF EXISTS '.$login.' CASCADE';
+        $sql = connectToDB("data");
+        pg_query($sql, $query);
+    }
 
     /**
      * Permet de vérifier si un login existe déja
@@ -127,7 +168,7 @@
      */
     function verification_login($login){
         $query = "SELECT * FROM admin.user WHERE login=$1";
-        $result = doPreparedSelect($query, array($login));
+        $result = doPreparedSelect("admin", $query, array($login));
         if (is_array($result)) {
             if (sizeof($result) == 0) {
                 return true;
@@ -316,7 +357,8 @@
     /**
      * Permet de publier une layer présente dans une base de données
      * @param string $layerName
-     * @param array $dataList
+     * @param string $title
+     * @param string $abstract
      * @return string $result
      */
     function publishLayerDB( $layerName, $title, $abstract ) {
@@ -367,7 +409,7 @@
      */
     function deleteLayer($layerList) {
         foreach ( $layerList as $layer) {
-            $sql = connectToDB();
+            $sql = connectToDB("data");
             $query = 'DROP TABLE '.$_SESSION['login'].'.'.str_replace($_SESSION['login'].':', '', $layer).' CASCADE';
             $result = pg_query($query);
             disconnectFromDB($sql);
@@ -518,7 +560,7 @@
     function addPrivacy( $layername ) {
         $query = 'INSERT INTO admin.privacy (layername, userid, public) VALUES ( $1, $2, $3)';
         $params = [ $_SESSION['login'].'.'.$layername, $_SESSION['id'], 'false' ];
-        doPreparedRequest( $query, $params );
+        doPreparedRequest("admin", $query, $params );
         return true;
     }
 
@@ -531,7 +573,7 @@
         foreach ( $layerList as $layer) {
             $query = 'DELETE FROM admin.privacy WHERE layername = $1';
             $params = [ str_replace(':', '.', $layer) ];
-            doPreparedRequest( $query, $params );
+            doPreparedRequest("admin", $query, $params );
         }
     }
 
@@ -544,7 +586,7 @@
     function setPrivacy( $layername, $public ) {
         $query = 'UPDATE admin.privacy SET public=$1 WHERE layername=$2';
         $params = [ $public, str_replace('privacy', '', str_replace(':', '.', $layername) ) ];
-        doPreparedRequest( $query, $params );
+        doPreparedRequest("admin", $query, $params );
         return true;
     }
 
@@ -556,7 +598,7 @@
     function getPrivacy( $layername ) {
         $query = 'SELECT public FROM admin.privacy WHERE layername=$1';
         $params = [ str_replace('privacy', '', str_replace(':', '.', $layername) ) ];
-        $res = doPreparedSelect( $query, $params );
+        $res = doPreparedSelect("admin", $query, $params );
         return $res;
     }
 
@@ -567,7 +609,7 @@
     function getAllPrivate() {
         $query = 'SELECT layername FROM admin.privacy where public=$1';
         $params = [ 'false' ];
-        $res = doPreparedSelect( $query, $params );
+        $res = doPreparedSelect("admin", $query, $params );
         return $res;
     }
 

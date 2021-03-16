@@ -29,8 +29,9 @@
             $success = insert_user($nom, $prenom, $login, $passwd);
             if ($success) {
                 create_workspace($login);
-                include('database.php');
-                $dataList = array( 'host' => $host, 'port' => $port, 'database' => $dbname, 'user' => $user, 'password' => $password,
+                include('config.php');
+                $dataList = array( 'host' => $host_data, 'port' => $port_data, 'database' => $db_data, 'user' => $user_data, 
+                    'password' => $password_data,
                     'store' => $login, 'description' => 'Geoserver Database', 'schema' => $login, 'login' => $login);
                 create_store_db($login, $dataList);
                 header('Location: /' .$ROOT. '/index.php/login');

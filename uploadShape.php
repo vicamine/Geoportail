@@ -1,5 +1,5 @@
 <?php
-
+    require_once "config.php";
     $file_parts = pathinfo($_FILES["fileToUpload"]["name"]);
     $file = $file_parts['filename'];
     $file = str_replace(' ', '_', $file);
@@ -8,7 +8,6 @@
     $uploadOk = 1;
     $fileType = strtolower(pathinfo($target_file,PATHINFO_EXTENSION));
     $error = 0;
-    $password = "dabrion";
 
     //checks to see if there was a file uploaded.
     if(isset($_POST["submit"])) {
@@ -60,7 +59,7 @@
     }
 
     // converting shapefile into table and add them to DB.
-    putenv("PGPASSWORD=".$password);
+    putenv("PGPASSWORD=".$password_data);
     $shpName = glob($target_dir."*.shp");
     $shpNameMaj = glob($target_dir."*.SHP");
     $all = array_merge($shpName, $shpNameMaj);
@@ -85,7 +84,7 @@
             else {
                 $projection = substr($_POST['Projection'], strpos($_POST['Projection'], ':'));
             }
-            $queries = "shp2pgsql -I -s ".$projection." -c ". $target_dir . $file ." ". $tblname ." | psql -h localhost -p 5432 -U postgres -d Geoportail";
+            $queries = "shp2pgsql -I -s ".$projection." -c ". $target_dir . $file ." ". $tblname ." | psql -h ".$host_data." -p ".$port_data." -U ".$user_data." -d ".$db_data;
             $output = shell_exec($queries);
             if (stripos($output, 'rollback') == NULL){
                 $error = 0;

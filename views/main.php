@@ -6,7 +6,7 @@
 
     <div id="mapSpace">
 
-    <div id='map' class="map"></div>
+        <div id='map' class="map"></div>
 
         <a id="export"> Download PNG </a>
         <a id="image-download" download="map.png"></a>
@@ -62,8 +62,8 @@
         </script>
 
         <script defer>
-        initMap();
-        capabilities( '<?php if (isset($_SESSION['login'])) { echo $_SESSION['login']; } else { echo 'null'; } ?>' );
+            initMap();
+            capabilities( '<?php if (isset($_SESSION['login'])) { echo $_SESSION['login']; } else { echo 'null'; } ?>' );
         </script>
 
     </div>
