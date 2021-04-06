@@ -31,11 +31,20 @@ function initMap () {
     });
 
     // Fond de carte
-
+/*
     map.addLayer(new ol.layer.Image({
         source: new ol.source.ImageWMS({
             url: '../wms_internal.php',
             params: {'LAYERS': '0', 'TILED': true, 'DOMAIN': 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?', 'TYPE': 'fond_de_carte'},
+            serverType: 'geoserver',
+        }),
+        name: 'fond_de_carte_georep'
+    }));*/
+
+    map.addLayer(new ol.layer.Image({
+        source: new ol.source.ImageWMS({
+            url: 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?',
+            params: {'LAYERS': '0', 'TILED': true},
             serverType: 'geoserver',
         }),
         name: 'fond_de_carte_georep'

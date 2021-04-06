@@ -67,11 +67,15 @@ function initMap() {
         name: 'fond_de_carte_stamen_toner',
         visible: false
     }));
-
+    
     var procedure = new ol.layer.Vector({
         source: new ol.source.Vector({
-            url: '../sosAPI.php?request=FOI&offering="http://www.52north.org/test/offering/10"&procedure="http://www.52north.org/test/procedure/9"',
-            format: new ol.format.GML()
+            url: '../SOS/gml.gml',
+            format: new ol.format.GML({
+                srsName: 'EPSG:4326'
+            }),
+            name: 'testGML',
+            type: 'GML'
         }),
     });
     map.addLayer(procedure);
@@ -141,3 +145,64 @@ function fondChange( fond ) {
         }
     });
 }
+
+
+function createGML( jsonFile ){
+    var featureMemberTemplate = "<gml:featureMember><ogr:capteurs fid=\"capteur.1\"><ogr:geometryProperty></ogr:geometryProperty><ogr:id>1</ogr:id></ogr:capteurs></gml:featureMember>";
+    var json = null;
+    $.ajax({
+        'async': false,
+        'url': jsonFile,
+        'dataType': "json",
+        'success': function(data) {
+            json = data;
+        }
+    });
+    for (var elem in json){
+        var key = elem;
+    }
+    for (var elem in json[key]["procedure"]){
+        var key2 = elem;
+    }
+    var shape = json[key]["procedure"][key2]["FOI"]["shape"];
+    shape = JSON.stringify(shape);
+    shape = shape.replaceAll("[", "");
+    shape = shape.replaceAll("]", "");
+    shape = shape.replaceAll('\\"', "'");
+    shape = shape.replaceAll('"', "");
+    shape = shape.replaceAll('\\n', " ");
+    shape = shape.replaceAll('<sams:shape>', "");
+    shape = shape.replaceAll('</sams:shape>', "");
+    var points = shape.split(",");
+    var featureMembers = Array();
+    var index = featureMemberTemplate.indexOf("<ogr:geometryProperty>") + "<ogr:geometryProperty>".length;
+    for (var i=0; i<points.length; i++) {
+        var featureMember = featureMemberTemplate;
+        featureMember = featureMember.replaceAll('capteur.1', 'capteur.'+(i+1));
+        featureMember = featureMember.replaceAll('<ogr:id>1</ogr:id>', '<ogr:id>'+(i+1)+'</ogr:id>');
+        feature = [featureMember.slice(0, index), points[i], featureMember.slice(index)].join('');
+        featureMembers.push(feature);
+    }
+    featureMembers = featureMembers.join('');
+    var template;
+    $.ajax({
+        'async': false,
+        'url': '../SOS/gmlTemplate.gml',
+        'dataType': "text",
+        'success': function(data) {
+            template = data;
+        }
+    });
+    var templateIndex = template.indexOf('</gml:boundedBy>') + '</gml:boundedBy>'.length;
+    var gmlFile = [template.slice(0, templateIndex), featureMembers, template.slice(templateIndex)].join('');
+    $.ajax({
+        'url': '../SOS/createFile.php',
+        'dataType': "text",
+        'type': 'POST',
+        'data': {
+            text: gmlFile
+        }
+    });
+}
+
+

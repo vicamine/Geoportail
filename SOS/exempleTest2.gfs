@@ -1,0 +1,20 @@
+<GMLFeatureClassList>
+  <GMLFeatureClass>
+    <Name>exempleTest</Name>
+    <ElementPath>exempleTest</ElementPath>
+    <!--POINT-->
+    <GeometryType>1</GeometryType>
+    <DatasetSpecificInfo>
+      <FeatureCount>2</FeatureCount>
+      <ExtentXMin>-22.29394</ExtentXMin>
+      <ExtentXMax>51.93510</ExtentXMax>
+      <ExtentYMin>7.65197</ExtentYMin>
+      <ExtentYMax>166.45358</ExtentYMax>
+    </DatasetSpecificInfo>
+    <PropertyDefn>
+      <Name>id</Name>
+      <ElementPath>id</ElementPath>
+      <Type>Integer</Type>
+    </PropertyDefn>
+  </GMLFeatureClass>
+</GMLFeatureClassList>

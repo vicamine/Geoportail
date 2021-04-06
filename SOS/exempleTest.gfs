@@ -1,0 +1,21 @@
+<GMLFeatureClassList>
+  <GMLFeatureClass>
+    <Name>exempleTest</Name>
+    <ElementPath>exempleTest</ElementPath>
+    <!--POINT-->
+    <GeometryType>1</GeometryType>
+    <SRSName>EPSG:4326</SRSName>
+    <DatasetSpecificInfo>
+      <FeatureCount>2</FeatureCount>
+      <ExtentXMin>-1.58689</ExtentXMin>
+      <ExtentXMax>-0.96011</ExtentXMax>
+      <ExtentYMin>0.65812</ExtentYMin>
+      <ExtentYMax>0.67521</ExtentYMax>
+    </DatasetSpecificInfo>
+    <PropertyDefn>
+      <Name>id</Name>
+      <ElementPath>id</ElementPath>
+      <Type>Integer</Type>
+    </PropertyDefn>
+  </GMLFeatureClass>
+</GMLFeatureClassList>

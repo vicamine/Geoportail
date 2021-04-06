@@ -3,7 +3,7 @@
     require_once 'model.php';
     require_once 'config.php';
     
-    if (isset($_GET['DOMAIN']) && isset($_GET['TYPE'])) {
+    /*if (isset($_GET['DOMAIN']) && isset($_GET['TYPE'])) {
         if ($_GET['REQUEST'] == 'GetMap') {
             $url = explode('?', basename($_SERVER['REQUEST_URI']))[1];
             $url = $_GET['DOMAIN'].$url;
@@ -13,7 +13,7 @@
             header('Content-type: image/png');
             imagepng($image);
         }
-    }
+    }*/
     if( isset($_REQUEST['REQUEST'])) {
         if ( $_REQUEST['REQUEST'] == 'capabilities') {
             $url = $domain.'SERVICE=wms&VERSION=1.1.1&REQUEST=GetCapabilities';

@@ -1,0 +1,10 @@
+<gml:featureMember>
+    <ogr:exempleTest fid="exempleTest.0">
+        <ogr:geometryProperty>
+            <gml:Point srsName="EPSG:4326">
+                <gml:coordinates>-1.58689458689459,0.675213675213675</gml:coordinates>
+            </gml:Point>
+        </ogr:geometryProperty>
+        <ogr:id>1</ogr:id>
+    </ogr:exempleTest>
+</gml:featureMember>

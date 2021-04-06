@@ -43,7 +43,19 @@
             }
         });
     });
+    /*document.addEventListener('DOMContentLoaded', function () {
+        $.ajax({
+            url: 'http://localhost/Geoportail/SOS/index2.php?request=GetCapabilities&version=2.0.0',
+            type: 'GET',
+            dataType: 'json',
+            success: function(res) {
+                document.querySelector('#capa').innerHTML = res;
+            }
+        });
+    });*/
 </script>
+
+<div id="capa"></div>
 
 <div id="container" style="width:100%; height:400px;"></div>
 
@@ -65,6 +77,7 @@
 </script>
 
 <script defer>
+    createGML("../SOS/SOScapa.json");
     initMap();
 </script>
 
