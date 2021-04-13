@@ -2,6 +2,7 @@
 var map;
 var view;
 var viewNC;
+var layers = [];
 
 
 function initMap() {
@@ -30,8 +31,8 @@ function initMap() {
     // Fond de carte
     map.addLayer(new ol.layer.Image({
         source: new ol.source.ImageWMS({
-            url: '../getMap.php',
-            params: {'LAYERS': '0', 'TILED': true, 'DOMAIN': 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?'},
+            url: 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?',
+            params: {'LAYERS': '0', 'TILED': true},
             serverType: 'geoserver',
         }),
         name: 'fond_de_carte_georep',
@@ -68,18 +69,78 @@ function initMap() {
         visible: false
     }));
     
+    /*
+    var xmlhttp = new XMLHttpRequest();
+
+    xmlhttp.open("GET", "../SOS/testPolygoneNC3.gml", true);
+    xmlhttp.onload = function () {
+        var format = new ol.format.GML3();
+
+        var xmlDoc = xmlhttp.responseXML;
+
+        // Read and parse all features in XML document
+        var features = format.readFeatures(xmlDoc, {
+            featureProjection: 'EPSG:4326',
+            dataProjection: 'EPSG:4326'
+        });
+        
+        var vector = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                format: format,
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({
+                      color: 'rgba(255, 255, 255, 0.5)'
+                    }),
+                    stroke: new ol.style.Stroke({
+                      color: 'rgb(255,255,0)',
+                      width: 2
+                    }),
+                    image: new ol.style.Circle({
+                      radius: 7,
+                      fill: new ol.style.Fill({
+                        color: 'rgb(0,0,255)'
+                      })
+                    })
+                })
+            })
+        });
+
+        // Add features to the layer's source
+        vector.getSource().addFeatures(features);
+
+        map.addLayer(vector);
+    };
+    xmlhttp.send();*/
+    
     var procedure = new ol.layer.Vector({
         source: new ol.source.Vector({
             url: '../SOS/gml.gml',
-            format: new ol.format.GML({
-                srsName: 'EPSG:4326'
+            format: new ol.format.GML3({
+                srsName: 'EPSG:4326',
+                featureNS: 'map',
+                featureType: 'wfs_geom',
             }),
             name: 'testGML',
-            type: 'GML'
+            type: 'GML',
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({
+                  color: 'rgba(255, 255, 255, 0.5)'
+                }),
+                stroke: new ol.style.Stroke({
+                  color: 'rgb(255,255,0)',
+                  width: 2
+                }),
+                image: new ol.style.Circle({
+                  radius: 7,
+                  fill: new ol.style.Fill({
+                    color: 'rgb(0,0,255)'
+                  })
+                })
+            })  
         }),
     });
     map.addLayer(procedure);
-
+    layers.push(procedure);
 }
 
 
