@@ -69,10 +69,10 @@ function initMap() {
         visible: false
     }));
     
-    /*
+    
     var xmlhttp = new XMLHttpRequest();
 
-    xmlhttp.open("GET", "../SOS/testPolygoneNC3.gml", true);
+    xmlhttp.open("GET", "../SOS/gml.gml", true);
     xmlhttp.onload = function () {
         var format = new ol.format.GML3();
 
@@ -102,7 +102,7 @@ function initMap() {
                       })
                     })
                 })
-            })
+            }),
         });
 
         // Add features to the layer's source
@@ -110,9 +110,9 @@ function initMap() {
 
         map.addLayer(vector);
     };
-    xmlhttp.send();*/
+    xmlhttp.send();
     
-    var procedure = new ol.layer.Vector({
+    /*var procedure = new ol.layer.Vector({
         source: new ol.source.Vector({
             url: '../SOS/gml.gml',
             format: new ol.format.GML3({
@@ -138,9 +138,10 @@ function initMap() {
                 })
             })  
         }),
+        opacity: 0.5,
     });
     map.addLayer(procedure);
-    layers.push(procedure);
+    layers.push(procedure);*/
 }
 
 
