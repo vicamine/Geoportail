@@ -3,17 +3,6 @@
     require_once 'model.php';
     require_once 'config.php';
     
-    /*if (isset($_GET['DOMAIN']) && isset($_GET['TYPE'])) {
-        if ($_GET['REQUEST'] == 'GetMap') {
-            $url = explode('?', basename($_SERVER['REQUEST_URI']))[1];
-            $url = $_GET['DOMAIN'].$url;
-            $image = imagecreatefrompng($url);
-            imagealphablending($image, false);
-            imagesavealpha($image, true);
-            header('Content-type: image/png');
-            imagepng($image);
-        }
-    }*/
     if( isset($_REQUEST['REQUEST'])) {
         if ( $_REQUEST['REQUEST'] == 'capabilities') {
             $url = $domain.'SERVICE=wms&VERSION=1.1.1&REQUEST=GetCapabilities';
@@ -53,6 +42,7 @@
                 $value->parentNode->removeChild($value);
             }
             $res = $doc->saveXML();
+            header('Content-type: text/xml');
             echo $res;
         }
         else if ($_GET['REQUEST'] == 'GetMap') {

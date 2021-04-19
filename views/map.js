@@ -31,15 +31,6 @@ function initMap () {
     });
 
     // Fond de carte
-/*
-    map.addLayer(new ol.layer.Image({
-        source: new ol.source.ImageWMS({
-            url: '../wms_internal.php',
-            params: {'LAYERS': '0', 'TILED': true, 'DOMAIN': 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?', 'TYPE': 'fond_de_carte'},
-            serverType: 'geoserver',
-        }),
-        name: 'fond_de_carte_georep'
-    }));*/
 
     map.addLayer(new ol.layer.Image({
         source: new ol.source.ImageWMS({
@@ -193,7 +184,13 @@ function initMap () {
 /**
  Permet de récupérer un fichier getCapabilities, le parse et l'affiche sous forme d'arborescence.
  */
-function capabilities( user ) {
+ function capabilities( user ) {
+    
+    var theme = ["Mine", "Niveau de vie", "Autres"];
+    var themeLower = [];
+    theme.forEach(function(elem){
+        themeLower.push(elem.toLowerCase().replaceAll(" ", "_"));
+    });
 
     $.ajax({
         url: '../wms_internal.php',
@@ -202,11 +199,10 @@ function capabilities( user ) {
             REQUEST: 'capabilities',
             user: user,
         },
-        dataType: 'xml',
+        dataType: "xml",
         success: function(res) {
             document.querySelector('#contenue').style.display = 'block';
             var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
-            var workspaceList = [];
 
             if (x.length > 0) {
                 var menu = document.createElement('ul');
@@ -214,37 +210,18 @@ function capabilities( user ) {
                 document.querySelector('#contenue').append(menu);
             }
 
-            for (i = 0; i < x.length; i++) {
-                if ( x[i].getElementsByTagName('Name')[0].innerHTML.indexOf(':') == -1 ) {
-                    if ( workspaceList.indexOf('Group of layer' ) == -1) {
-                        workspaceList.push('Group of layer');
-                        var workspace = document.createElement('li');
-                        workspace.innerHTML = 'Group of layer';
-                        workspace.setAttribute('class', 'level1');
-                        var sousMenu = document.createElement('ul');
-                        sousMenu.setAttribute('class', 'sousMenu');
-                        sousMenu.setAttribute('id', 'groupLayer');
-                        workspace.append(sousMenu);
-                        document.querySelector('#menu').append(workspace);
-                    }
-                } else {
-                    var workspaceName = x[i].getElementsByTagName('Name')[0].innerHTML.substr(0, x[i].getElementsByTagName('Name')[0].innerHTML.indexOf(':'));
-                    if ( workspaceList.indexOf(workspaceName) == -1 ) {
-                        workspaceList.push(workspaceName);
-                        var workspace = document.createElement('li');
-                        workspace.innerHTML = workspaceName;
-                        workspace.setAttribute('class', 'level1');
-                        var sousMenu = document.createElement('ul');
-                        sousMenu.setAttribute('class', 'sousMenu');
-                        sousMenu.setAttribute('id', workspaceName);
-                        workspace.append(sousMenu);
-                        document.querySelector('#menu').append(workspace);
-                    }
-                }
-            }
+            theme.forEach(function(elem){
+                var workspace = document.createElement('li');
+                workspace.innerHTML = elem;
+                workspace.setAttribute('class', 'level1');
+                var sousMenu = document.createElement('ul');
+                sousMenu.setAttribute('class', 'sousMenu');
+                sousMenu.setAttribute('id', elem.toLowerCase().replaceAll(" ", "_"));
+                workspace.append(sousMenu);
+                document.querySelector('#menu').append(workspace);
+            });
 
             for (i = 0; i < x.length; i++) {
-
                 var layer = document.createElement('li');
                 var link = document.createElement('a');
                 var name = x[i].getElementsByTagName('Name')[0].innerHTML;
@@ -256,7 +233,6 @@ function capabilities( user ) {
                 layer.setAttribute('title', x[i].getElementsByTagName('Title')[0].innerHTML);
                 layer.setAttribute('name', x[i].getElementsByTagName('Name')[0].innerHTML);
                 var styles = x[i].getElementsByTagName('Style');
-                var wsName = name.substr(0, name.indexOf(':'));
 
                 link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML
 
@@ -272,12 +248,32 @@ function capabilities( user ) {
                 layer.setAttribute('styles', str);
                 layer.append(link);
 
-                if ( wsName == '' ) {
-                    document.querySelector('#groupLayer').append(layer);
-                } else {
-                    document.querySelector('#'+wsName).append(layer);
+                if (x[i].getElementsByTagName('Keyword').length > 0){
+                    var wsName = x[i].getElementsByTagName('Keyword');
+                    var append = false;
+                    for (var j = 0; j < wsName.length; j++) {
+                        var key = wsName[j].innerHTML.toLowerCase().replaceAll(" ", "_");
+                        if(themeLower.includes(key)){
+                            if (!append) {
+                                document.querySelector('#'+key).append(layer);
+                                append = true;
+                            }
+                            else {
+                                var lay = layer.cloneNode(true);
+                                document.querySelector('#'+key).append(lay);
+                            }
+                        }
+                        else{
+                            document.querySelector('#Autres').append(layer);
+                        }
+                    }
                 }
+                else{
+                    document.querySelector('#Autres').append(layer);
+                }
+
             }
+
             map.updateSize();
         }
     });
