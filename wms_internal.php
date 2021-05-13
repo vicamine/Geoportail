@@ -42,6 +42,9 @@
                 $value->parentNode->removeChild($value);
             }
             $res = $doc->saveXML();
+            $file = fopen("./capabilities/capabilities.xml","w");
+            fwrite($file, $res);
+            fclose($file);
             header('Content-type: text/xml');
             echo $res;
         }

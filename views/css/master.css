@@ -34,7 +34,7 @@ header{
     justify-content: flex-end;
     color: white;
     background-color: #0090ff;
-    border-bottom: 1px solid black;
+    /*border-bottom: 1px solid black;*/
 }
 
 header h1{
@@ -72,9 +72,20 @@ header a:hover::after{
 }
 
 footer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
     padding: 1%;
-    font-size: 9px;
     text-align: center;
     color: white;
     background-color: #0090ff;
+}
+
+footer .UNC {
+    width: 70px;
+}
+
+footer .CNRT {
+    width: 100px;
 }

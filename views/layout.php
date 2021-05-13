@@ -32,7 +32,8 @@
         } ?>
         </div>
         <footer>
-            <h1>Dabrion Victor-Emmanuel (2020)</h1>
+            <p><img class="CNRT" src="../images/logoCNRT.png" alt="logo CNRT"></p>
+            <p><img class="UNC" src="../images/logoUNC.png" alt="logo UNC"></p>
         </footer>
     </body>
 </html>

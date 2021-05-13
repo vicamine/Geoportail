@@ -3,6 +3,11 @@ var layers = [];
 var map;
 var view;
 var viewNC;
+var theme = ["Mine", "Niveau de vie", "Autres"];
+var themeLower = [];
+theme.forEach(function(elem){
+    themeLower.push(elem.toLowerCase().replaceAll(" ", "_"));
+});
 
 
 /**
@@ -185,12 +190,6 @@ function initMap () {
  Permet de récupérer un fichier getCapabilities, le parse et l'affiche sous forme d'arborescence.
  */
  function capabilities( user ) {
-    
-    var theme = ["Mine", "Niveau de vie", "Autres"];
-    var themeLower = [];
-    theme.forEach(function(elem){
-        themeLower.push(elem.toLowerCase().replaceAll(" ", "_"));
-    });
 
     $.ajax({
         url: '../wms_internal.php',
@@ -212,13 +211,19 @@ function initMap () {
 
             theme.forEach(function(elem){
                 var workspace = document.createElement('li');
-                workspace.innerHTML = elem;
+                var theme = document.createElement('span');
+                theme.innerHTML = elem;
+                var display = "displayTheme(\""+elem.toLowerCase().replaceAll(" ", "_")+"\")";
+                theme.setAttribute('href', "javascript:void(0);");
+                theme.setAttribute('onclick', display);
+                workspace.append(theme);
                 workspace.setAttribute('class', 'level1');
                 var sousMenu = document.createElement('ul');
                 sousMenu.setAttribute('class', 'sousMenu');
                 sousMenu.setAttribute('id', elem.toLowerCase().replaceAll(" ", "_"));
                 workspace.append(sousMenu);
                 document.querySelector('#menu').append(workspace);
+                document.querySelector('#'+elem.toLowerCase().replaceAll(" ", "_")).style.display = 'none';
             });
 
             for (i = 0; i < x.length; i++) {
@@ -244,7 +249,6 @@ function initMap () {
                         str += ', ' + elem.getElementsByTagName('Name')[0].innerHTML;
                     }
                 }
-                str += '';
                 layer.setAttribute('styles', str);
                 layer.append(link);
 
@@ -570,12 +574,93 @@ function moveDown( layername ) {
 function displayCapa() {
     if ( document.querySelector('#contenue').style.display == 'none' ) {
         document.querySelector('#contenue').style.display = 'block';
-        document.querySelector('#onglet h2').innerHTML = 'X';
+        document.querySelector('.sidePanel').src = '../images/bouton_close.png';
         map.updateSize();
     }
     else {
         document.querySelector('#contenue').style.display = 'none';
-        document.querySelector('#onglet h2').innerHTML = '<';
+        document.querySelector('.sidePanel').src = '../images/bouton_hamburger.png';
         map.updateSize();
+    }
+}
+
+
+/**
+ * Permet d'afficher masquer les thèmes
+ */
+function displayTheme(theme) {
+    themeLower.forEach(function(elem){
+        if (theme != elem) {
+            document.querySelector('#'+elem).style.display = 'none';
+        }
+    })
+    document.querySelector("#recherche").style.display = "none";
+    if (document.querySelector('#'+theme).style.display == "block") {
+        document.querySelector('#'+theme).style.display = 'none';
+    }
+    else {
+        document.querySelector('#'+theme).style.display = 'block';
+    }
+}
+
+
+/**
+ * Permet d'afficher masquer la zone de recherche
+ */
+ function displayRecherche() {
+    themeLower.forEach(function(elem){
+        if (theme != elem) {
+            document.querySelector('#'+elem).style.display = 'none';
+        }
+    })
+    if (document.querySelector("#recherche").style.display == "block" || document.querySelector("#recherche").style.display == "") {
+        document.querySelector("#recherche").style.display = "none";
+    }
+    else {
+        document.querySelector("#recherche").style.display = "block";
+    }
+}
+
+
+/**
+ * Permet de chercher une layer
+ */
+function research() {
+    
+    document.querySelector("#recherche ul").innerHTML = "";
+    var value = document.querySelector("#search").value;
+
+    if (value != ""){
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.open("GET", "../capabilities/capabilities.xml", true);
+        xmlhttp.onload = function () {
+            var xmlDoc = xmlhttp.responseXML;
+            var x = xmlDoc.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
+            for (i = 0; i < x.length; i++) {
+                var name = x[i].getElementsByTagName('Name')[0].innerHTML;
+                var title = x[i].getElementsByTagName('Title')[0].innerHTML.toLowerCase();
+                var keywords = x[i].getElementsByTagName('Keyword');
+                var abstract = x[i].getElementsByTagName('Abstract')[0].innerHTML.toLowerCase();
+                
+                if (title.includes(value.toLowerCase()) || abstract.includes(value.toLowerCase())) {
+                    var layer = document.getElementById('z'+name.replace(':', '__')+'Layer');
+                    var lay = layer.cloneNode(true);
+                    document.querySelector('#recherche ul').append(lay);
+                }
+                else if (keywords.length > 0){
+                    for (var j = 0; j < keywords.length; j++) {
+                        var key = keywords[j].innerHTML.toLowerCase();
+                        if (key.includes(value.toLowerCase())){
+                            var layer = document.getElementById('z'+name.replace(':', '__')+'Layer');
+                            var lay = layer.cloneNode(true);
+                            document.querySelector('#recherche ul').append(lay);
+                            break;
+                        }
+                    }
+                }
+            }
+        };
+        xmlhttp.send();
     }
 }
