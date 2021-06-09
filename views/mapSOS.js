@@ -267,4 +267,190 @@ function createGML( jsonFile ){
     });
 }
 
+var observablePropertyList = [];
+var foiList = [];
+
+function initSOS() {
+    
+    var jsonFile = "../SOS/exCapa.json";
+    var json = null;
+    $.ajax({
+        'async': false,
+        'url': jsonFile,
+        'dataType': "json",
+        'success': function(data) {
+            json = data;
+        }
+    });
+    Object.keys(json).forEach(function(offering) {
+        var select = document.getElementById("offering");
+        var option = document.createElement("option");
+        option.setAttribute("value", offering);
+        if (typeof json[offering]["name"] == "string") {
+            option.innerHTML = json[offering]["name"];
+        }
+        else {
+            option.innerHTML = offering;
+        }
+        select.append(option);
+        Object.keys(json[offering]["procedure"]).forEach(function(procedure) {
+            Object.keys(json[offering]["procedure"][procedure]["listeOP"]).forEach(function(observableProperty) {
+                if (!observablePropertyList.includes(observableProperty)) {
+                    var select = document.getElementById("observableProperty");
+                    var option = document.createElement("option");
+                    option.setAttribute("value", observableProperty);
+                    option.setAttribute("id", observableProperty);
+                    option.setAttribute("class", procedure + " " + offering + " _observableProperty");
+                    option.setAttribute("procedure", procedure);
+                    option.innerHTML = observableProperty;
+                    select.append(option);
+                    observablePropertyList.push(observableProperty);
+                }
+                else {
+                    var option = document.getElementById(observableProperty);
+                    if (!option.className.includes(procedure)) {
+                        option.setAttribute("class", option.className + " " + procedure);
+                    }
+                    if (!option.className.includes(offering)) {
+                        option.setAttribute("class", option.className + " " + offering);
+                    }
+                }
+            });
+        });
+
+        Object.keys(json[offering]["procedure"]).forEach(function(procedure) {
+            Object.keys(json[offering]["procedure"][procedure]["FOI"]["id"]).forEach(function(foi) {
+                if (!foiList.includes(json[offering]["procedure"][procedure]["FOI"]["id"][foi])) {
+                    var select = document.getElementById("foi");
+                    var option = document.createElement("option");
+                    option.setAttribute("value", json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
+                    option.setAttribute("id", json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
+                    option.setAttribute("class", procedure + " " + offering + " _foi");
+                    option.setAttribute("procedure",procedure);
+                    option.innerHTML = json[offering]["procedure"][procedure]["FOI"]["name"][foi];
+                    select.append(option);
+                    document.getElementById(json[offering]["procedure"][procedure]["FOI"]["id"][foi]).style.display = "none";
+                    foiList.push(json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
+                }
+                else {
+                    var option = document.getElementById(json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
+                    if (!option.className.includes(procedure)) {
+                        option.setAttribute("class", option.className + " " + procedure);
+                    }
+                    if (!option.className.includes(offering)) {
+                        option.setAttribute("class", option.className + " " + offering);
+                    }
+                }
+            });
+        });
+    });
+}
+
+
+function updateObservablePropertyAndFoi() {
+
+    var offering = document.getElementById("offering").value;
+
+    if (offering == "none") {
+        var observablePropertyOffering = document.getElementsByClassName("_observableProperty");
+        for(var i=0; i<observablePropertyOffering.length ; i++){
+            observablePropertyOffering[i].style.display = "block";
+        }
+
+        var foiOffering = document.getElementsByClassName("_foi");
+        for(var i=0; i<foiOffering.length ; i++){
+            foiOffering[i].style.display = "none";
+        }
+
+        observable = document.getElementById("observableProperty").selectedIndex = "0";
+        foi = document.getElementById("foi").selectedIndex = "0";
+    }
+    else {
+        var toHide = document.getElementsByClassName("_observableProperty");
+        for(var i=0; i<toHide.length ; i++){
+            toHide[i].style.display = "none";
+        }
+        var elem = document.getElementsByClassName(offering + " _observableProperty");
+        for(var i=0; i<elem.length ; i++){
+            elem[i].style.display = "block";
+        }
+        var foiOffering = document.getElementsByClassName("_foi");
+        for(var i=0; i<foiOffering.length ; i++){
+            foiOffering[i].style.display = "none";
+        }
+
+        observable = document.getElementById("observableProperty").selectedIndex = "0";
+        foi = document.getElementById("foi").selectedIndex = "0";
+    }
+    enableButton();
+}
+
+function updateMapAndFoi() {
+    var observableProperty = document.getElementById("observableProperty").value;
+    if (observableProperty == "none") {
+        var foiObservable = document.getElementsByClassName("_foi");
+        for(var i=0; i<foiObservable.length ; i++){
+            foiObservable[i].style.display = "none";
+        }
+        foi = document.getElementById("foi").selectedIndex = "0";
+    }
+    else {
+        var procedure = document.getElementById(observableProperty).getAttribute("procedure");
+        var toShow = document.getElementsByClassName(procedure + " _foi");
+        for(var i=0; i<toShow.length ; i++){
+            toShow[i].style.display = "block";
+        }
+        foi = document.getElementById("foi").selectedIndex = "0";
+    }
+    enableButton();
+}
+
+function enableButton() {
+    var foi = document.getElementById("foi").value;
+    if (foi != "none") {
+        document.getElementById("valider").disabled = false;
+    }
+    else {
+        document.getElementById("valider").disabled = true;
+    }
+}
+
+function resultatSOS() {
+    var observableProperty = document.getElementById("observableProperty").value;
+    var foi = document.getElementById("foi").value;
+    $.ajax({
+        url: '../sosAPI.php',
+        type: 'GET',
+        data: {
+            request: 'result',
+            observableProperty: observableProperty,
+            foi: foi
+        },
+        dataType: 'json',
+        success: function(res) {
+            var valeur = [];
+            res.Valeur.forEach(element => valeur.push(parseFloat(element)));
+            const chart = Highcharts.chart('container', {
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'resultat'
+                },
+                xAxis: {
+                    categories: res.Date
+                },
+                yAxis: {
+                    title: {
+                        text: 'valeur'
+                    }
+                },
+                series: [{
+                    name: observableProperty,
+                    data: valeur
+                }]
+            });
+        }
+    });
+}
 

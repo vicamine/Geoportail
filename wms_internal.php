@@ -2,11 +2,22 @@
 
     require_once 'model.php';
     require_once 'config.php';
-    
+
     if( isset($_REQUEST['REQUEST'])) {
         if ( $_REQUEST['REQUEST'] == 'capabilities') {
-            $url = $domain.'SERVICE=wms&VERSION=1.1.1&REQUEST=GetCapabilities';
-            $file = file_get_contents($url);
+            
+            $filename = "./capabilities/capabilities.xml";
+            if (!file_exists($filename)) {
+                $url = $domain.'SERVICE=wms&VERSION=1.1.1&REQUEST=GetCapabilities';
+                $file = file_get_contents($url);
+                $doc = new DOMDocument();
+                $doc->loadXML($file);
+                $res = $doc->saveXML();
+                $file = fopen("./capabilities/capabilities.xml","w");
+                fwrite($file, $res);
+                fclose($file);
+            }
+            $file = file_get_contents($filename);
             $doc = new DOMDocument();
             $doc->loadXML($file);
             $res = getAllPrivate();
@@ -42,9 +53,6 @@
                 $value->parentNode->removeChild($value);
             }
             $res = $doc->saveXML();
-            $file = fopen("./capabilities/capabilities.xml","w");
-            fwrite($file, $res);
-            fclose($file);
             header('Content-type: text/xml');
             echo $res;
         }
@@ -72,6 +80,17 @@
             imagesavealpha($image, true);
             header('Content-type: image/png');
             imagepng($image);
+        }
+        else if ($_REQUEST['REQUEST'] == "clearCache") {
+            $url = $domain.'SERVICE=wms&VERSION=1.1.1&REQUEST=GetCapabilities';
+            $file = file_get_contents($url);
+            $doc = new DOMDocument();
+            $doc->loadXML($file);
+            $res = $doc->saveXML();
+            $file = fopen("./capabilities/capabilities.xml","w");
+            fwrite($file, $res);
+            fclose($file);
+            echo "Cache Cleared";
         }
     }
 

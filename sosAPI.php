@@ -3,7 +3,7 @@
     if ( isset( $_GET['request'] ) ) {
         if ( $_GET['request'] == 'result' ) {
             header('Content-type: application/json');
-            $json = file_get_contents('./json.json');
+            $json = file_get_contents('./SOS/exResult.json');
             echo $json;
         }
         else if ( $_GET['request'] == 'offering' ) {

@@ -187,100 +187,117 @@ function initMap () {
 
 
 /**
- Permet de récupérer un fichier getCapabilities, le parse et l'affiche sous forme d'arborescence.
+ Permet de récupérer un fichier getCapabilities
  */
  function capabilities( user ) {
 
     $.ajax({
-        url: '../wms_internal.php',
+        url: '../capabilities/capabilities.xml',
         type: 'GET',
-        data: {
-            REQUEST: 'capabilities',
-            user: user,
-        },
         dataType: "xml",
         success: function(res) {
-            document.querySelector('#contenue').style.display = 'block';
-            var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
-
-            if (x.length > 0) {
-                var menu = document.createElement('ul');
-                menu.setAttribute('id', 'menu');
-                document.querySelector('#contenue').append(menu);
-            }
-
-            theme.forEach(function(elem){
-                var workspace = document.createElement('li');
-                var theme = document.createElement('span');
-                theme.innerHTML = elem;
-                var display = "displayTheme(\""+elem.toLowerCase().replaceAll(" ", "_")+"\")";
-                theme.setAttribute('href', "javascript:void(0);");
-                theme.setAttribute('onclick', display);
-                workspace.append(theme);
-                workspace.setAttribute('class', 'level1');
-                var sousMenu = document.createElement('ul');
-                sousMenu.setAttribute('class', 'sousMenu');
-                sousMenu.setAttribute('id', elem.toLowerCase().replaceAll(" ", "_"));
-                workspace.append(sousMenu);
-                document.querySelector('#menu').append(workspace);
-                document.querySelector('#'+elem.toLowerCase().replaceAll(" ", "_")).style.display = 'none';
+            displayCapabilities(res);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            $.ajax({
+                url: '../wms_internal.php',
+                type: 'GET',
+                data: {
+                    REQUEST: 'capabilities',
+                    user: user,
+                },
+                dataType: "xml",
+                success: function(res) {
+                    displayCapabilities(res);
+                }
             });
-
-            for (i = 0; i < x.length; i++) {
-                var layer = document.createElement('li');
-                var link = document.createElement('a');
-                var name = x[i].getElementsByTagName('Name')[0].innerHTML;
-                var js = "addLay(\""+name+"\", \"\")";
-                link.setAttribute('href', "javascript:void(0);");
-                link.setAttribute('ondblclick', js);
-                layer.setAttribute('id', 'z'+name.replace(':', '__')+'Layer');
-                layer.setAttribute('sum', x[i].getElementsByTagName('Abstract')[0].innerHTML);
-                layer.setAttribute('title', x[i].getElementsByTagName('Title')[0].innerHTML);
-                layer.setAttribute('name', x[i].getElementsByTagName('Name')[0].innerHTML);
-                var styles = x[i].getElementsByTagName('Style');
-
-                link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML
-
-                var str = '';
-                for ( elem of styles) {
-                    if (str == '') {
-                        str += elem.getElementsByTagName('Name')[0].innerHTML;
-                    } else {
-                        str += ', ' + elem.getElementsByTagName('Name')[0].innerHTML;
-                    }
-                }
-                layer.setAttribute('styles', str);
-                layer.append(link);
-
-                if (x[i].getElementsByTagName('Keyword').length > 0){
-                    var wsName = x[i].getElementsByTagName('Keyword');
-                    var append = false;
-                    for (var j = 0; j < wsName.length; j++) {
-                        var key = wsName[j].innerHTML.toLowerCase().replaceAll(" ", "_");
-                        if(themeLower.includes(key)){
-                            if (!append) {
-                                document.querySelector('#'+key).append(layer);
-                                append = true;
-                            }
-                            else {
-                                var lay = layer.cloneNode(true);
-                                document.querySelector('#'+key).append(lay);
-                            }
-                        }
-                        else{
-                            document.querySelector('#Autres').append(layer);
-                        }
-                    }
-                }
-                else{
-                    document.querySelector('#Autres').append(layer);
-                }
-
-            }
-
-            map.updateSize();
         }
     });
+}
+
+/**
+ * Permet de parser et afficher un fichier de capabilities
+ */
+function displayCapabilities ( res ) {
+    document.querySelector('#contenue').style.display = 'block';
+        var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
+
+        if (x.length > 0) {
+            var menu = document.createElement('ul');
+            menu.setAttribute('id', 'menu');
+            document.querySelector('#contenue').append(menu);
+        }
+
+        theme.forEach(function(elem){
+            var workspace = document.createElement('li');
+            var theme = document.createElement('span');
+            theme.innerHTML = elem;
+            var display = "displayTheme(\""+elem.toLowerCase().replaceAll(" ", "_")+"\")";
+            theme.setAttribute('href', "javascript:void(0);");
+            theme.setAttribute('onclick', display);
+            workspace.append(theme);
+            workspace.setAttribute('class', 'level1');
+            var sousMenu = document.createElement('ul');
+            sousMenu.setAttribute('class', 'sousMenu');
+            sousMenu.setAttribute('id', elem.toLowerCase().replaceAll(" ", "_"));
+            workspace.append(sousMenu);
+            document.querySelector('#menu').append(workspace);
+            document.querySelector('#'+elem.toLowerCase().replaceAll(" ", "_")).style.display = 'none';
+        });
+
+        for (i = 0; i < x.length; i++) {
+            var layer = document.createElement('li');
+            var link = document.createElement('a');
+            var name = x[i].getElementsByTagName('Name')[0].innerHTML;
+            var js = "addLay(\""+name+"\", \"\")";
+            link.setAttribute('href', "javascript:void(0);");
+            link.setAttribute('ondblclick', js);
+            layer.setAttribute('id', 'z'+name.replace(':', '__')+'Layer');
+            layer.setAttribute('sum', x[i].getElementsByTagName('Abstract')[0].innerHTML);
+            layer.setAttribute('title', x[i].getElementsByTagName('Title')[0].innerHTML);
+            layer.setAttribute('name', x[i].getElementsByTagName('Name')[0].innerHTML);
+            var styles = x[i].getElementsByTagName('Style');
+
+            link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML
+
+            var str = '';
+            for ( elem of styles) {
+                if (str == '') {
+                    str += elem.getElementsByTagName('Name')[0].innerHTML;
+                } else {
+                    str += ', ' + elem.getElementsByTagName('Name')[0].innerHTML;
+                }
+            }
+            layer.setAttribute('styles', str);
+            layer.append(link);
+
+            if (x[i].getElementsByTagName('Keyword').length > 0){
+                var wsName = x[i].getElementsByTagName('Keyword');
+                var append = false;
+                for (var j = 0; j < wsName.length; j++) {
+                    var key = wsName[j].innerHTML.toLowerCase().replaceAll(" ", "_");
+                    if(themeLower.includes(key)){
+                        if (!append) {
+                            document.querySelector('#'+key).append(layer);
+                            append = true;
+                        }
+                        else {
+                            var lay = layer.cloneNode(true);
+                            document.querySelector('#'+key).append(lay);
+                        }
+                    }
+                    else{
+                        document.querySelector('#Autres').append(layer);
+                    }
+                }
+            }
+            else{
+                document.querySelector('#Autres').append(layer);
+            }
+
+        }
+
+        map.updateSize();
 }
 
 

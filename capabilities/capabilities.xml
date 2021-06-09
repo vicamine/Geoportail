@@ -6908,6 +6908,7 @@
       <SRS>EPSG:68186405</SRS>
       <SRS>EPSG:68206405</SRS>
       <SRS>EPSG:69036405</SRS>
+      <SRS>EPSG:404000</SRS>
       <SRS>EPSG:102113</SRS>
       <SRS>EPSG:42302</SRS>
       <SRS>EPSG:42301</SRS>
@@ -6940,7 +6941,6 @@
       <SRS>EPSG:42305</SRS>
       <SRS>EPSG:42304</SRS>
       <SRS>EPSG:42303</SRS>
-      <SRS>EPSG:404000</SRS>
       <LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0"/>
       <Layer queryable="1" opaque="0">
         <Name>nurc:Arc_Sample</Name>
