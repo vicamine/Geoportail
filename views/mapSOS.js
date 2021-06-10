@@ -272,78 +272,88 @@ var foiList = [];
 
 function initSOS() {
     
-    var jsonFile = "../SOS/exCapa.json";
+    var jsonFile = "../sosAPI.php";
     var json = null;
     $.ajax({
         'async': false,
         'url': jsonFile,
+        'type': 'GET',
+        'data': {
+            request:'capabilities'
+        },
         'dataType': "json",
         'success': function(data) {
             json = data;
         }
     });
-    Object.keys(json).forEach(function(offering) {
-        var select = document.getElementById("offering");
-        var option = document.createElement("option");
-        option.setAttribute("value", offering);
-        if (typeof json[offering]["name"] == "string") {
-            option.innerHTML = json[offering]["name"];
-        }
-        else {
-            option.innerHTML = offering;
-        }
-        select.append(option);
-        Object.keys(json[offering]["procedure"]).forEach(function(procedure) {
-            Object.keys(json[offering]["procedure"][procedure]["listeOP"]).forEach(function(observableProperty) {
-                if (!observablePropertyList.includes(observableProperty)) {
-                    var select = document.getElementById("observableProperty");
-                    var option = document.createElement("option");
-                    option.setAttribute("value", observableProperty);
-                    option.setAttribute("id", observableProperty);
-                    option.setAttribute("class", procedure + " " + offering + " _observableProperty");
-                    option.setAttribute("procedure", procedure);
-                    option.innerHTML = observableProperty;
-                    select.append(option);
-                    observablePropertyList.push(observableProperty);
-                }
-                else {
-                    var option = document.getElementById(observableProperty);
-                    if (!option.className.includes(procedure)) {
-                        option.setAttribute("class", option.className + " " + procedure);
+    if (json != null) {
+        Object.keys(json).forEach(function(offering) {
+            var select = document.getElementById("offering");
+            var option = document.createElement("option");
+            option.setAttribute("value", offering);
+            if (typeof json[offering]["name"] == "string") {
+                option.innerHTML = json[offering]["name"];
+            }
+            else {
+                option.innerHTML = offering;
+            }
+            select.append(option);
+            Object.keys(json[offering]["procedure"]).forEach(function(procedure) {
+                Object.keys(json[offering]["procedure"][procedure]["listeOP"]).forEach(function(observableProperty) {
+                    if (!observablePropertyList.includes(observableProperty)) {
+                        var select = document.getElementById("observableProperty");
+                        var option = document.createElement("option");
+                        option.setAttribute("value", observableProperty);
+                        option.setAttribute("id", observableProperty);
+                        option.setAttribute("class", procedure + " " + offering + " _observableProperty");
+                        option.setAttribute("procedure", procedure);
+                        option.innerHTML = observableProperty;
+                        select.append(option);
+                        observablePropertyList.push(observableProperty);
                     }
-                    if (!option.className.includes(offering)) {
-                        option.setAttribute("class", option.className + " " + offering);
+                    else {
+                        var option = document.getElementById(observableProperty);
+                        if (!option.className.includes(procedure)) {
+                            option.setAttribute("class", option.className + " " + procedure);
+                        }
+                        if (!option.className.includes(offering)) {
+                            option.setAttribute("class", option.className + " " + offering);
+                        }
                     }
-                }
+                });
+            });
+    
+            Object.keys(json[offering]["procedure"]).forEach(function(procedure) {
+                Object.keys(json[offering]["procedure"][procedure]["FOI"]["id"]).forEach(function(foi) {
+                    if (!foiList.includes(json[offering]["procedure"][procedure]["FOI"]["id"][foi])) {
+                        var select = document.getElementById("foi");
+                        var option = document.createElement("option");
+                        option.setAttribute("value", json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
+                        option.setAttribute("id", json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
+                        option.setAttribute("class", procedure + " " + offering + " _foi");
+                        option.setAttribute("procedure",procedure);
+                        option.innerHTML = json[offering]["procedure"][procedure]["FOI"]["name"][foi];
+                        select.append(option);
+                        document.getElementById(json[offering]["procedure"][procedure]["FOI"]["id"][foi]).style.display = "none";
+                        foiList.push(json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
+                    }
+                    else {
+                        var option = document.getElementById(json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
+                        if (!option.className.includes(procedure)) {
+                            option.setAttribute("class", option.className + " " + procedure);
+                        }
+                        if (!option.className.includes(offering)) {
+                            option.setAttribute("class", option.className + " " + offering);
+                        }
+                    }
+                });
             });
         });
-
-        Object.keys(json[offering]["procedure"]).forEach(function(procedure) {
-            Object.keys(json[offering]["procedure"][procedure]["FOI"]["id"]).forEach(function(foi) {
-                if (!foiList.includes(json[offering]["procedure"][procedure]["FOI"]["id"][foi])) {
-                    var select = document.getElementById("foi");
-                    var option = document.createElement("option");
-                    option.setAttribute("value", json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
-                    option.setAttribute("id", json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
-                    option.setAttribute("class", procedure + " " + offering + " _foi");
-                    option.setAttribute("procedure",procedure);
-                    option.innerHTML = json[offering]["procedure"][procedure]["FOI"]["name"][foi];
-                    select.append(option);
-                    document.getElementById(json[offering]["procedure"][procedure]["FOI"]["id"][foi]).style.display = "none";
-                    foiList.push(json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
-                }
-                else {
-                    var option = document.getElementById(json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
-                    if (!option.className.includes(procedure)) {
-                        option.setAttribute("class", option.className + " " + procedure);
-                    }
-                    if (!option.className.includes(offering)) {
-                        option.setAttribute("class", option.className + " " + offering);
-                    }
-                }
-            });
-        });
-    });
+    }
+    else {
+        console.log("erreur service SOS");
+    }
+    
 }
 
 

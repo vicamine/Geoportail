@@ -3,35 +3,17 @@
     if ( isset( $_GET['request'] ) ) {
         if ( $_GET['request'] == 'result' ) {
             header('Content-type: application/json');
-            $json = file_get_contents('./SOS/exResult.json');
+            $json = file_get_contents('./SOS/index2.php?request=GetResult&version=2.0.0&observedProperty='+ $_GET['observableProperty'] +'&featureOfInterest='+ $_GET['foi']);
             echo $json;
         }
-        else if ( $_GET['request'] == 'offering' ) {
+        elseif ($_GET['request'] == 'capabilities') {
             header('Content-type: application/json');
-            $json = file_get_contents('./SOS/SOScapa.json');
-            $json = json_decode($json, true);
-            $res = array();
-            foreach ($json as $key => $value) {
-                array_push($res, $key);
-            }
-            $res = json_encode($res, JSON_FORCE_OBJECT);
-            echo $res;
-        }
-        elseif ( $_GET['request'] == 'FOI' ) {
-            if ( isset($_GET['procedure']) && isset($_GET['offering'])){
-                header('Content-type: application/json');
-                $json = file_get_contents('./SOS/SOScapa.json');
-                $json = json_decode($json, true);
-                $res = $json[str_replace('"', '', $_GET['offering'])]['procedure'];
-                foreach ($res as $key => $value) {
-                    if ( $key == str_replace('"', '', $_GET['procedure']) ) {
-                        $json = $value['FOI']['shape'];
-                        $json = $json[count($json)-1];
-                        break;
-                    }
-                }
-                echo $json;
-            }
+            $json = file_get_contents('./SOS/index2.php?request=GetCapabilities&version=2.0.0');
+            $filename = "./SOS/capapabilities.json";
+            $file = fopen($filename,"w");
+            fwrite($file, $json);
+            fclose($file);
+            echo $json;
         }
     }
 

@@ -7,7 +7,8 @@
     if($updateSequence!=""){
       $fichierCapa = $fichierCapa.$updateSequence;
     }
-    ParseCapa($fichierCapa,$URLServer);
+    header("contentType:application/json");
+    echo $parseCapa = ParseCapa($fichierCapa,$URLServer);
   }
   //"function qui sert a renvoyer sur une autre page"
   function result_action($URI,$URLServer,$requete,$version,$service,$featureOfInterest,$offering,$observableProperty,$spatialFilter,$temporalFilter,$responseFormat){
@@ -26,16 +27,7 @@
     if($responseFormat != ""){
       $fichierResult = $fichierResult.$responseFormat;
     }
-    infoGraph($fichierResult);
+    header("contentType:application/json");
+    echo $infoGraph = infoGraph($fichierResult);
   }
-  //"function qui sert a renvoyer sur une autre page"
-  /*function describeSensor_action($URI,$URLServer,$requete,$version,$service,$procedure,$procedureDescriptionFormat,$validTime){
-    $fichierFOI = "$URLServer?request=GetFeatureOfInterest&version=$version";
-    //mettre en param le nom de domaine
-    $fichierDesSen = "$URLServer?request=DescribeSensor&service=$service&version=$version&procedure=$procedure&procedureDescriptionFormat=$procedureDescriptionFormat";
-    if($validTime!=""){
-      $fichierDesSen = $fichierDesSen.$validTime;
-    }
-    ParseCapa($fichierCapa,$URLServeur);
-  }*/
 ?>

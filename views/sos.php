@@ -40,56 +40,6 @@
 <div id="container"></div>
 
 <script>
-    /*document.addEventListener('DOMContentLoaded', function () {
-        $.ajax({
-            url: '../sosAPI.php',
-            type: 'GET',
-            data: {
-                request: 'result',
-            },
-            dataType: 'json',
-            success: function(res) {
-                var valeur = [];
-                res.Valeur.forEach(element => valeur.push(parseInt(element)));
-                const chart = Highcharts.chart('container', {
-                    chart: {
-                        type: 'line'
-                    },
-                    title: {
-                        text: 'resultat'
-                    },
-                    xAxis: {
-                        categories: res.Date
-                    },
-                    yAxis: {
-                        title: {
-                            text: 'mesure'
-                        }
-                    },
-                    series: [{
-                        name: 'Test',
-                        data: valeur
-                    }, {
-                        name: 'Test2',
-                        data: valeur
-                    }]
-                });
-            }
-        });
-    });*/
-    /*document.addEventListener('DOMContentLoaded', function () {
-        $.ajax({
-            url: 'http://localhost/Geoportail/SOS/index2.php?request=GetCapabilities&version=2.0.0',
-            type: 'GET',
-            dataType: 'json',
-            success: function(res) {
-                document.querySelector('#capa').innerHTML = res;
-            }
-        });
-    });*/
-</script>
-
-<script>
     <?php require 'mapSOS.js'; ?>
 </script>
 
