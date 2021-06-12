@@ -31,9 +31,16 @@ function initMap () {
     });
 
     map = new ol.Map({
+        interactions: ol.interaction.defaults({mouseWheelZoom:false}),
         target: 'map',
         view: viewNC
     });
+    var mouseWheelInt = new ol.interaction.MouseWheelZoom();
+    map.addInteraction(mouseWheelInt);
+
+    map.on('wheel', function(evt) {
+        mouseWheelInt.setActive(ol.events.condition.shiftKeyOnly(evt));
+     });
 
     // Fond de carte
 
