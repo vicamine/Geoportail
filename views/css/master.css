@@ -34,7 +34,7 @@ header{
     justify-content: flex-end;
     color: white;
     background-color: #0090ff;
-    /*border-bottom: 1px solid black;*/
+    border-bottom: 1px solid black;
 }
 
 header h1{
@@ -80,6 +80,7 @@ footer{
     text-align: center;
     color: white;
     background-color: #0090ff;
+    border-top: solid 1px black;
 }
 
 footer .UNC {

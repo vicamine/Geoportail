@@ -445,7 +445,7 @@ function resultatSOS() {
                     type: 'line'
                 },
                 title: {
-                    text: 'resultat'
+                    text: 'Mesure'
                 },
                 xAxis: {
                     categories: res.Date
