@@ -38,7 +38,7 @@
 
     </div>
     <div id="onglet">
-        <h2 onclick='displayCapa()'> X </h2>
+        <p onclick='displayCapa()'><img class="sidePanel" src="../images/bouton_close.png" alt="bouton hamburger"></p>
         <div id='contenue'>
             <h3> Fond de carte </h3>
             <div id="fondCarte">
@@ -49,6 +49,11 @@
                     <option value="fond_de_carte_stamen_toner"> Stamen - Toner </option>
                     <option value="fond_de_carte_stamen_watercolor"> Stamen - Watercolor </option>
                 </select>
+            </div>
+            <h3 id="rechercheTitre" href="javascript:void(0);" onclick="displayRecherche()">Rechercher</h3>
+            <div id="recherche">
+                <input type="text" id="search" name="search" value="" oninput="research()" placeholder="recherche"/>
+                <ul></ul>
             </div>
         </div>
     </div>

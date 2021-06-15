@@ -31,6 +31,14 @@
 
         </div>
 
+        <div class="cache">
+        
+            <br><br>
+            <input type="button" id="clearCache" value="Vider le cache">
+            <br><br>
+
+        </div>
+
     </div>
 
     <div id="layer">
@@ -316,9 +324,23 @@
         }
     }
 
+
+    function clearCache(){
+        $.ajax({
+            url: "../wms_internal.php",
+            type: "GET",
+            data: {
+                REQUEST: "clearCache",
+            }
+        });
+    }
+
+
     layers( '<?php if (isset($_SESSION['login'])) { echo $_SESSION['login']; } else { echo 'null'; } ?>' );
 
     styles();
+
+    document.getElementById("clearCache").onclick = clearCache;
 
 </script>
 

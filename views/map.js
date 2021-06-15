@@ -3,6 +3,11 @@ var layers = [];
 var map;
 var view;
 var viewNC;
+var theme = ["Mine", "Niveau de vie", "Autres"];
+var themeLower = [];
+theme.forEach(function(elem){
+    themeLower.push(elem.toLowerCase().replaceAll(" ", "_"));
+});
 
 
 /**
@@ -26,16 +31,23 @@ function initMap () {
     });
 
     map = new ol.Map({
+        interactions: ol.interaction.defaults({mouseWheelZoom:false}),
         target: 'map',
         view: viewNC
     });
+    var mouseWheelInt = new ol.interaction.MouseWheelZoom();
+    map.addInteraction(mouseWheelInt);
+
+    map.on('wheel', function(evt) {
+        mouseWheelInt.setActive(ol.events.condition.shiftKeyOnly(evt));
+     });
 
     // Fond de carte
 
     map.addLayer(new ol.layer.Image({
         source: new ol.source.ImageWMS({
-            url: '../wms_internal.php',
-            params: {'LAYERS': '0', 'TILED': true, 'DOMAIN': 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?', 'TYPE': 'fond_de_carte'},
+            url: 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?',
+            params: {'LAYERS': '0', 'TILED': true},
             serverType: 'geoserver',
         }),
         name: 'fond_de_carte_georep'
@@ -182,96 +194,117 @@ function initMap () {
 
 
 /**
- Permet de récupérer un fichier getCapabilities, le parse et l'affiche sous forme d'arborescence.
+ Permet de récupérer un fichier getCapabilities
  */
-function capabilities( user ) {
+ function capabilities( user ) {
 
     $.ajax({
-        url: '../wms_internal.php',
+        url: '../capabilities/capabilities.xml',
         type: 'GET',
-        data: {
-            REQUEST: 'capabilities',
-            user: user,
-        },
-        dataType: 'xml',
+        dataType: "xml",
         success: function(res) {
-            document.querySelector('#contenue').style.display = 'block';
-            var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
-            var workspaceList = [];
-
-            if (x.length > 0) {
-                var menu = document.createElement('ul');
-                menu.setAttribute('id', 'menu');
-                document.querySelector('#contenue').append(menu);
-            }
-
-            for (i = 0; i < x.length; i++) {
-                if ( x[i].getElementsByTagName('Name')[0].innerHTML.indexOf(':') == -1 ) {
-                    if ( workspaceList.indexOf('Group of layer' ) == -1) {
-                        workspaceList.push('Group of layer');
-                        var workspace = document.createElement('li');
-                        workspace.innerHTML = 'Group of layer';
-                        workspace.setAttribute('class', 'level1');
-                        var sousMenu = document.createElement('ul');
-                        sousMenu.setAttribute('class', 'sousMenu');
-                        sousMenu.setAttribute('id', 'groupLayer');
-                        workspace.append(sousMenu);
-                        document.querySelector('#menu').append(workspace);
-                    }
-                } else {
-                    var workspaceName = x[i].getElementsByTagName('Name')[0].innerHTML.substr(0, x[i].getElementsByTagName('Name')[0].innerHTML.indexOf(':'));
-                    if ( workspaceList.indexOf(workspaceName) == -1 ) {
-                        workspaceList.push(workspaceName);
-                        var workspace = document.createElement('li');
-                        workspace.innerHTML = workspaceName;
-                        workspace.setAttribute('class', 'level1');
-                        var sousMenu = document.createElement('ul');
-                        sousMenu.setAttribute('class', 'sousMenu');
-                        sousMenu.setAttribute('id', workspaceName);
-                        workspace.append(sousMenu);
-                        document.querySelector('#menu').append(workspace);
-                    }
+            displayCapabilities(res);
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+            $.ajax({
+                url: '../wms_internal.php',
+                type: 'GET',
+                data: {
+                    REQUEST: 'capabilities',
+                    user: user,
+                },
+                dataType: "xml",
+                success: function(res) {
+                    displayCapabilities(res);
                 }
-            }
-
-            for (i = 0; i < x.length; i++) {
-
-                var layer = document.createElement('li');
-                var link = document.createElement('a');
-                var name = x[i].getElementsByTagName('Name')[0].innerHTML;
-                var js = "addLay(\""+name+"\", \"\")";
-                link.setAttribute('href', "javascript:void(0);");
-                link.setAttribute('ondblclick', js);
-                layer.setAttribute('id', 'z'+name.replace(':', '__')+'Layer');
-                layer.setAttribute('sum', x[i].getElementsByTagName('Abstract')[0].innerHTML);
-                layer.setAttribute('title', x[i].getElementsByTagName('Title')[0].innerHTML);
-                layer.setAttribute('name', x[i].getElementsByTagName('Name')[0].innerHTML);
-                var styles = x[i].getElementsByTagName('Style');
-                var wsName = name.substr(0, name.indexOf(':'));
-
-                link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML
-
-                var str = '';
-                for ( elem of styles) {
-                    if (str == '') {
-                        str += elem.getElementsByTagName('Name')[0].innerHTML;
-                    } else {
-                        str += ', ' + elem.getElementsByTagName('Name')[0].innerHTML;
-                    }
-                }
-                str += '';
-                layer.setAttribute('styles', str);
-                layer.append(link);
-
-                if ( wsName == '' ) {
-                    document.querySelector('#groupLayer').append(layer);
-                } else {
-                    document.querySelector('#'+wsName).append(layer);
-                }
-            }
-            map.updateSize();
+            });
         }
     });
+}
+
+/**
+ * Permet de parser et afficher un fichier de capabilities
+ */
+function displayCapabilities ( res ) {
+    document.querySelector('#contenue').style.display = 'block';
+        var x = res.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
+
+        if (x.length > 0) {
+            var menu = document.createElement('ul');
+            menu.setAttribute('id', 'menu');
+            document.querySelector('#contenue').append(menu);
+        }
+
+        theme.forEach(function(elem){
+            var workspace = document.createElement('li');
+            var theme = document.createElement('span');
+            theme.innerHTML = elem;
+            var display = "displayTheme(\""+elem.toLowerCase().replaceAll(" ", "_")+"\")";
+            theme.setAttribute('href', "javascript:void(0);");
+            theme.setAttribute('onclick', display);
+            workspace.append(theme);
+            workspace.setAttribute('class', 'level1');
+            var sousMenu = document.createElement('ul');
+            sousMenu.setAttribute('class', 'sousMenu');
+            sousMenu.setAttribute('id', elem.toLowerCase().replaceAll(" ", "_"));
+            workspace.append(sousMenu);
+            document.querySelector('#menu').append(workspace);
+            document.querySelector('#'+elem.toLowerCase().replaceAll(" ", "_")).style.display = 'none';
+        });
+
+        for (i = 0; i < x.length; i++) {
+            var layer = document.createElement('li');
+            var link = document.createElement('a');
+            var name = x[i].getElementsByTagName('Name')[0].innerHTML;
+            var js = "addLay(\""+name+"\", \"\")";
+            link.setAttribute('href', "javascript:void(0);");
+            link.setAttribute('ondblclick', js);
+            layer.setAttribute('id', 'z'+name.replace(':', '__')+'Layer');
+            layer.setAttribute('sum', x[i].getElementsByTagName('Abstract')[0].innerHTML);
+            layer.setAttribute('title', x[i].getElementsByTagName('Title')[0].innerHTML);
+            layer.setAttribute('name', x[i].getElementsByTagName('Name')[0].innerHTML);
+            var styles = x[i].getElementsByTagName('Style');
+
+            link.innerHTML += x[i].getElementsByTagName('Title')[0].innerHTML
+
+            var str = '';
+            for ( elem of styles) {
+                if (str == '') {
+                    str += elem.getElementsByTagName('Name')[0].innerHTML;
+                } else {
+                    str += ', ' + elem.getElementsByTagName('Name')[0].innerHTML;
+                }
+            }
+            layer.setAttribute('styles', str);
+            layer.append(link);
+
+            if (x[i].getElementsByTagName('Keyword').length > 0){
+                var wsName = x[i].getElementsByTagName('Keyword');
+                var append = false;
+                for (var j = 0; j < wsName.length; j++) {
+                    var key = wsName[j].innerHTML.toLowerCase().replaceAll(" ", "_");
+                    if(themeLower.includes(key)){
+                        if (!append) {
+                            document.querySelector('#'+key).append(layer);
+                            append = true;
+                        }
+                        else {
+                            var lay = layer.cloneNode(true);
+                            document.querySelector('#'+key).append(lay);
+                        }
+                    }
+                    else{
+                        document.querySelector('#Autres').append(layer);
+                    }
+                }
+            }
+            else{
+                document.querySelector('#Autres').append(layer);
+            }
+
+        }
+
+        map.updateSize();
 }
 
 
@@ -565,12 +598,93 @@ function moveDown( layername ) {
 function displayCapa() {
     if ( document.querySelector('#contenue').style.display == 'none' ) {
         document.querySelector('#contenue').style.display = 'block';
-        document.querySelector('#onglet h2').innerHTML = 'X';
+        document.querySelector('.sidePanel').src = '../images/bouton_close.png';
         map.updateSize();
     }
     else {
         document.querySelector('#contenue').style.display = 'none';
-        document.querySelector('#onglet h2').innerHTML = '<';
+        document.querySelector('.sidePanel').src = '../images/bouton_hamburger.png';
         map.updateSize();
+    }
+}
+
+
+/**
+ * Permet d'afficher masquer les thèmes
+ */
+function displayTheme(theme) {
+    themeLower.forEach(function(elem){
+        if (theme != elem) {
+            document.querySelector('#'+elem).style.display = 'none';
+        }
+    })
+    document.querySelector("#recherche").style.display = "none";
+    if (document.querySelector('#'+theme).style.display == "block") {
+        document.querySelector('#'+theme).style.display = 'none';
+    }
+    else {
+        document.querySelector('#'+theme).style.display = 'block';
+    }
+}
+
+
+/**
+ * Permet d'afficher masquer la zone de recherche
+ */
+ function displayRecherche() {
+    themeLower.forEach(function(elem){
+        if (theme != elem) {
+            document.querySelector('#'+elem).style.display = 'none';
+        }
+    })
+    if (document.querySelector("#recherche").style.display == "block" || document.querySelector("#recherche").style.display == "") {
+        document.querySelector("#recherche").style.display = "none";
+    }
+    else {
+        document.querySelector("#recherche").style.display = "block";
+    }
+}
+
+
+/**
+ * Permet de chercher une layer
+ */
+function research() {
+    
+    document.querySelector("#recherche ul").innerHTML = "";
+    var value = document.querySelector("#search").value;
+
+    if (value != ""){
+        var xmlhttp = new XMLHttpRequest();
+
+        xmlhttp.open("GET", "../capabilities/capabilities.xml", true);
+        xmlhttp.onload = function () {
+            var xmlDoc = xmlhttp.responseXML;
+            var x = xmlDoc.getElementsByTagName("Layer")[0].getElementsByTagName("Layer");
+            for (i = 0; i < x.length; i++) {
+                var name = x[i].getElementsByTagName('Name')[0].innerHTML;
+                var title = x[i].getElementsByTagName('Title')[0].innerHTML.toLowerCase();
+                var keywords = x[i].getElementsByTagName('Keyword');
+                var abstract = x[i].getElementsByTagName('Abstract')[0].innerHTML.toLowerCase();
+                
+                if (title.includes(value.toLowerCase()) || abstract.includes(value.toLowerCase())) {
+                    var layer = document.getElementById('z'+name.replace(':', '__')+'Layer');
+                    var lay = layer.cloneNode(true);
+                    document.querySelector('#recherche ul').append(lay);
+                }
+                else if (keywords.length > 0){
+                    for (var j = 0; j < keywords.length; j++) {
+                        var key = keywords[j].innerHTML.toLowerCase();
+                        if (key.includes(value.toLowerCase())){
+                            var layer = document.getElementById('z'+name.replace(':', '__')+'Layer');
+                            var lay = layer.cloneNode(true);
+                            document.querySelector('#recherche ul').append(lay);
+                            break;
+                        }
+                    }
+                }
+            }
+        };
+        xmlhttp.send();
     }
 }

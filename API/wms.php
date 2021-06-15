@@ -1,5 +1,5 @@
 <?php
-    require_once 'wms_config.php';
+    require_once 'config.php';
     $host = $domain;
     $finalUrl = $host.explode('?', $url)[1];
 

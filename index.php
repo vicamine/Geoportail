@@ -12,6 +12,10 @@
         header('Location: '.$URI."/main");
         exit();
     }
+    if($PATH == "") {
+        header('Location: '.$URI."index.php/main");
+        exit();
+    }
 
 
     if ($COMPLETE_PATH[0] == 'ows') {

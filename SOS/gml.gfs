@@ -1,0 +1,20 @@
+<GMLFeatureClassList>
+  <GMLFeatureClass>
+    <Name>capteurs</Name>
+    <ElementPath>capteurs</ElementPath>
+    <!--POINT-->
+    <GeometryType>1</GeometryType>
+    <DatasetSpecificInfo>
+      <FeatureCount>8</FeatureCount>
+      <ExtentXMin>-22.29394</ExtentXMin>
+      <ExtentXMax>51.93510</ExtentXMax>
+      <ExtentYMin>2.35016</ExtentYMin>
+      <ExtentYMax>166.45358</ExtentYMax>
+    </DatasetSpecificInfo>
+    <PropertyDefn>
+      <Name>id</Name>
+      <ElementPath>id</ElementPath>
+      <Type>Integer</Type>
+    </PropertyDefn>
+  </GMLFeatureClass>
+</GMLFeatureClassList>
