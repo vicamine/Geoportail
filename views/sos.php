@@ -10,29 +10,22 @@
     <div id="container"></div>
 
     <div id="selecteurs">
-        
-        <div id="fondCarte">
-            <h3> Fond de carte </h3>
-            <select id="fond" name="fond" onchange="fondChange(this.value)">
-                <option value="fond_de_carte_georep"> Georep </option>
-                <option value="fond_de_carte_osm" selected> OpenStreetMap </option>
-                <option value="fond_de_carte_stamen_terrain"> Stamen - Terrain </option>
-                <option value="fond_de_carte_stamen_toner"> Stamen - Toner </option>
-                <option value="fond_de_carte_stamen_watercolor"> Stamen - Watercolor </option>
-            </select>
-        </div>
 
         <div id="filtres">
             <h3> Filtres </h3>
-            <h4>Offering</h4>
+            <h4>Thème</h4>
             <select name="offering" id="offering" onchange="updateObservablePropertyAndFoi()">
                 <option value="none" selected> --- </option>
             </select>
-            <h4>Observable Property</h4>
+            <h4>Phénomène observé</h4>
             <select name="observableProperty" id="observableProperty" onchange="updateMapAndFoi()">
                 <option value="none" selected> --- </option>
             </select>
-            <h4>Feature Of Interest</h4>
+            <h4>Fournisseur de la donnée</h4>
+            <select name="procedure" id="procedure" onchange="">
+                <option value="none" selected> --- </option>
+            </select>
+            <h4>Zone observé</h4>
             <select name="foi" id="foi" onchange="enableButton()">
                 <option value="none" selected> --- </option>
             </select>
@@ -71,7 +64,7 @@
         }]
     });
     
-    createGML("../SOS/SOScapa.json");
+    //createGML("../SOS/SOScapa.json");
     initMap();
     initSOS();
 </script>

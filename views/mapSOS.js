@@ -29,44 +29,10 @@ function initMap() {
 
 
     // Fond de carte
-    map.addLayer(new ol.layer.Image({
-        source: new ol.source.ImageWMS({
-            url: 'https://carto.gouv.nc/public/services/fond_imagerie/MapServer/WMSServer?',
-            params: {'LAYERS': '0', 'TILED': true},
-            serverType: 'geoserver',
-        }),
-        name: 'fond_de_carte_georep',
-        visible: false
-    }));
-
     map.addLayer(new ol.layer.Tile({
         source: new ol.source.OSM(),
         name: 'fond_de_carte_osm',
-        //visible: false
-    }));
-
-    map.addLayer(new ol.layer.Tile({
-        source: new ol.source.Stamen({
-            layer: 'terrain',
-        }),
-        name: 'fond_de_carte_stamen_terrain',
-        visible: false
-    }));
-
-    map.addLayer(new ol.layer.Tile({
-        source: new ol.source.Stamen({
-            layer: 'watercolor',
-        }),
-        name: 'fond_de_carte_stamen_watercolor',
-        visible: false
-    }));
-
-    map.addLayer(new ol.layer.Tile({
-        source: new ol.source.Stamen({
-            layer: 'toner',
-        }),
-        name: 'fond_de_carte_stamen_toner',
-        visible: false
+        visible: true
     }));
     
     
@@ -179,31 +145,6 @@ function addFOI( offering ) {
                     data: valeur
                 }]
             });
-        }
-    });
-}
-
-
-function fondChange( fond ) {
-    var fondCarte = [ 'fond_de_carte_stamen_terrain', 'fond_de_carte_stamen_toner', 'fond_de_carte_stamen_watercolor', 'fond_de_carte_osm', 'fond_de_carte_georep' ];
-    map.getLayers().forEach(function (layer) {
-        if (layer.get('name') != undefined && fondCarte.indexOf( layer.get('name')) != -1 ) {
-            layer.setVisible(false);
-        }
-    });
-    map.getLayers().forEach(function (layer) {
-        if (layer.get('name') != undefined && layer.get('name') == fond ) {
-            layer.setVisible(true);
-            if ( layer.get('name') != 'fond_de_carte_georep' ) {
-                if ( map.getView().getProjection().getCode() == 'EPSG:3163' ) {
-                    map.setView(view);
-                    map.getView().setCenter([ 165.568866, -21.425749 ]);
-                }
-            }
-            else {
-                map.setView(viewNC);
-                map.getView().setCenter([ 323399.78, 395030.91 ]);
-            }
         }
     });
 }
