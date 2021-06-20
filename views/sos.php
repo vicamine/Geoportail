@@ -14,15 +14,15 @@
         <div id="filtres">
             <h3> Filtres </h3>
             <h4>Thème</h4>
-            <select name="offering" id="offering" onchange="updateObservablePropertyAndFoi()">
+            <select name="offering" id="offering" onchange="updateObservableProperty()">
                 <option value="none" selected> --- </option>
             </select>
             <h4>Phénomène observé</h4>
-            <select name="observableProperty" id="observableProperty" onchange="updateMapAndFoi()">
+            <select name="observableProperty" id="observableProperty" onchange="updateProcedure()">
                 <option value="none" selected> --- </option>
             </select>
             <h4>Fournisseur de la donnée</h4>
-            <select name="procedure" id="procedure" onchange="">
+            <select name="procedure" id="procedure" onchange="updateFoi()">
                 <option value="none" selected> --- </option>
             </select>
             <h4>Zone observé</h4>

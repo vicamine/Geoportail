@@ -210,10 +210,12 @@ function createGML( jsonFile ){
 
 var observablePropertyList = [];
 var foiList = [];
+var procedureList = [];
 
 function initSOS() {
     
     var jsonFile = "../sosAPI.php";
+    //var jsonFile = "../SOS/capabilities.json";
     var json = null;
     $.ajax({
         'async': false,
@@ -239,29 +241,51 @@ function initSOS() {
                 option.innerHTML = offering;
             }
             select.append(option);
+            Object.keys(json[offering]["observableProperty"]).forEach(function(observableProperty) {
+                if (!observablePropertyList.includes(json[offering]["observableProperty"][observableProperty])) {
+                    var select = document.getElementById("observableProperty");
+                    var option = document.createElement("option");
+                    option.setAttribute("value", json[offering]["observableProperty"][observableProperty]);
+                    option.setAttribute("id", json[offering]["observableProperty"][observableProperty]);
+                    option.setAttribute("class", offering + " _observableProperty");
+                    option.setAttribute("offering", offering);
+                    var observableName = json[offering]["observableProperty"][observableProperty].split("/");
+                    observableName = observableName[observableName.length - 1];
+                    option.innerHTML = observableName;
+                    select.append(option);
+                    observablePropertyList.push(json[offering]["observableProperty"][observableProperty]);
+                }
+                else {
+                    var option = document.getElementById(json[offering]["observableProperty"][observableProperty]);
+                    if (!option.className.includes(offering)) {
+                        option.setAttribute("class", option.className + " " + offering);
+                    }
+                    if (!option.getAttribute("offering").includes(offering)) {
+                        option.setAttribute("offering", option.getAttribute("offering") + " " + offering);
+                    }
+                }
+            });
+
             Object.keys(json[offering]["procedure"]).forEach(function(procedure) {
-                Object.keys(json[offering]["procedure"][procedure]["listeOP"]).forEach(function(observableProperty) {
-                    if (!observablePropertyList.includes(observableProperty)) {
-                        var select = document.getElementById("observableProperty");
-                        var option = document.createElement("option");
-                        option.setAttribute("value", observableProperty);
-                        option.setAttribute("id", observableProperty);
-                        option.setAttribute("class", procedure + " " + offering + " _observableProperty");
-                        option.setAttribute("procedure", procedure);
-                        option.innerHTML = observableProperty;
-                        select.append(option);
-                        observablePropertyList.push(observableProperty);
+                if (!procedureList.includes(procedure)) {
+                    var select = document.getElementById("procedure");
+                    var option = document.createElement("option");
+                    option.setAttribute("value", procedure);
+                    option.setAttribute("id", procedure);
+                    option.setAttribute("class", offering + " _procedure");
+                    var procedureName = procedure.split("/");
+                    procedureName = procedureName[procedureName.length - 1]
+                    option.innerHTML = procedureName;
+                    select.append(option);
+                    document.getElementById(procedure).style.display = "none";
+                    procedureList.push(procedure);
+                }
+                else {
+                    var option = document.getElementById(procedure);
+                    if (!option.className.includes(offering)) {
+                        option.setAttribute("class", option.className + " " + offering);
                     }
-                    else {
-                        var option = document.getElementById(observableProperty);
-                        if (!option.className.includes(procedure)) {
-                            option.setAttribute("class", option.className + " " + procedure);
-                        }
-                        if (!option.className.includes(offering)) {
-                            option.setAttribute("class", option.className + " " + offering);
-                        }
-                    }
-                });
+                }
             });
     
             Object.keys(json[offering]["procedure"]).forEach(function(procedure) {
@@ -272,7 +296,6 @@ function initSOS() {
                         option.setAttribute("value", json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
                         option.setAttribute("id", json[offering]["procedure"][procedure]["FOI"]["id"][foi]);
                         option.setAttribute("class", procedure + " " + offering + " _foi");
-                        option.setAttribute("procedure",procedure);
                         option.innerHTML = json[offering]["procedure"][procedure]["FOI"]["name"][foi];
                         select.append(option);
                         document.getElementById(json[offering]["procedure"][procedure]["FOI"]["id"][foi]).style.display = "none";
@@ -298,7 +321,7 @@ function initSOS() {
 }
 
 
-function updateObservablePropertyAndFoi() {
+function updateObservableProperty() {
 
     var offering = document.getElementById("offering").value;
 
@@ -308,13 +331,7 @@ function updateObservablePropertyAndFoi() {
             observablePropertyOffering[i].style.display = "block";
         }
 
-        var foiOffering = document.getElementsByClassName("_foi");
-        for(var i=0; i<foiOffering.length ; i++){
-            foiOffering[i].style.display = "none";
-        }
-
         observable = document.getElementById("observableProperty").selectedIndex = "0";
-        foi = document.getElementById("foi").selectedIndex = "0";
     }
     else {
         var toHide = document.getElementsByClassName("_observableProperty");
@@ -325,18 +342,26 @@ function updateObservablePropertyAndFoi() {
         for(var i=0; i<elem.length ; i++){
             elem[i].style.display = "block";
         }
-        var foiOffering = document.getElementsByClassName("_foi");
-        for(var i=0; i<foiOffering.length ; i++){
-            foiOffering[i].style.display = "none";
-        }
 
         observable = document.getElementById("observableProperty").selectedIndex = "0";
-        foi = document.getElementById("foi").selectedIndex = "0";
     }
+    
+    var foiOffering = document.getElementsByClassName("_foi");
+    for(var i=0; i<foiOffering.length ; i++){
+        foiOffering[i].style.display = "none";
+    }
+    foi = document.getElementById("foi").selectedIndex = "0";
+
+    var procedureOffering = document.getElementsByClassName("_procedure");
+    for(var i=0; i<procedureOffering.length ; i++){
+        procedureOffering[i].style.display = "none";
+    }
+    procedure = document.getElementById("procedure").selectedIndex = "0";
+    
     enableButton();
 }
 
-function updateMapAndFoi() {
+function updateProcedure() {
     var observableProperty = document.getElementById("observableProperty").value;
     if (observableProperty == "none") {
         var foiObservable = document.getElementsByClassName("_foi");
@@ -344,13 +369,45 @@ function updateMapAndFoi() {
             foiObservable[i].style.display = "none";
         }
         foi = document.getElementById("foi").selectedIndex = "0";
+
+        var procedureObservable = document.getElementsByClassName("_procedure");
+        for(var i=0; i<procedureObservable.length ; i++){
+            procedureObservable[i].style.display = "none";
+        }
+        procedure = document.getElementById("procedure").selectedIndex = "0";
     }
     else {
-        var procedure = document.getElementById(observableProperty).getAttribute("procedure");
+        var offering = document.getElementById(observableProperty).getAttribute("offering");
+        offering = offering.split(" ");
+        offering.forEach( function(elem) {
+            var toShow = document.getElementsByClassName(elem + " _procedure");
+            for(var i=0; i<toShow.length ; i++){
+                toShow[i].style.display = "block";
+            }
+        });
+
+        foi = document.getElementById("foi").selectedIndex = "0";
+        procedure = document.getElementById("procedure").selectedIndex = "0";
+    }
+    enableButton();
+}
+
+function updateFoi() {
+    var procedure = document.getElementById("procedure").value;
+    if (procedure == "none") {
+        var foiProcedure = document.getElementsByClassName("_foi");
+        for(var i=0; i<foiProcedure.length ; i++){
+            foiProcedure[i].style.display = "none";
+        }
+        foi = document.getElementById("foi").selectedIndex = "0";
+
+    }
+    else {
         var toShow = document.getElementsByClassName(procedure + " _foi");
         for(var i=0; i<toShow.length ; i++){
             toShow[i].style.display = "block";
         }
+
         foi = document.getElementById("foi").selectedIndex = "0";
     }
     enableButton();
@@ -369,17 +426,22 @@ function enableButton() {
 function resultatSOS() {
     var observableProperty = document.getElementById("observableProperty").value;
     var foi = document.getElementById("foi").value;
+    var procedure = document.getElementById("procedure").value;
     $.ajax({
         url: '../sosAPI.php',
+        //url: '../SOS/exResult.json',
         type: 'GET',
         data: {
             request: 'result',
             observableProperty: observableProperty,
-            foi: foi
+            foi: foi,
+            procedure: procedure
         },
         dataType: 'json',
         success: function(res) {
             var valeur = [];
+            observablePropertyName = observableProperty.split("/");
+            observablePropertyName = observablePropertyName[observablePropertyName.length - 1];
             res.Valeur.forEach(element => valeur.push(parseFloat(element)));
             const chart = Highcharts.chart('container', {
                 chart: {
@@ -397,7 +459,7 @@ function resultatSOS() {
                     }
                 },
                 series: [{
-                    name: observableProperty,
+                    name: observablePropertyName,
                     data: valeur
                 }]
             });
