@@ -2,7 +2,8 @@
     if ( isset( $_GET['request'] ) ) {
         if ( $_GET['request'] == 'result' ) {
             header('Content-type: application/json');
-            $url ="http://localhost/geoportail/SOS/index2.php?request=GetResult&version=2.0.0&observedProperty="+$_GET['observableProperty']+"&featureOfInterest="+$_GET['foi']+"&procedure="+$_GET['procedure'];
+            //Si offering non renseigné, offering = none
+            $url ="http://localhost/geoportail/SOS/index2.php?request=GetResult&version=2.0.0&observedProperty="+$_GET['observableProperty']+"&featureOfInterest="+$_GET['foi']+"&procedure="+$_GET['procedure']+"&offering="+$_GET['offering'];
             //$url = "http://localhost/geoportail/SOS/index2.php?request=GetResult&version=2.0.0&observedProperty=http://grimm-dev.unc.prod/sos/observableProperty/extractionMiniereSaprolitesHumidesAnnuelle&featureOfInterest=http://grimm-dev.unc.prod/featureOfInterest/02&procedure=http://grimm-dev.unc.prod/sos/procedure/dimenc&featureOfInterest=http://grimm-dev.unc.prod/featureOfInterest/02";
 	        $options = array(
                 'http' => array(

@@ -74,7 +74,7 @@ function initMap() {
         // Add features to the layer's source
         vector.getSource().addFeatures(features);
 
-        map.addLayer(vector);
+        //map.addLayer(vector);
     };
     xmlhttp.send();
     
@@ -150,12 +150,12 @@ function addFOI( offering ) {
 }
 
 
-function createGML( jsonFile ){
+function createGML(procedure, foi){
     var featureMemberTemplate = "<gml:featureMember><ogr:capteurs fid=\"capteur.1\"><ogr:geometryProperty></ogr:geometryProperty><ogr:id>1</ogr:id></ogr:capteurs></gml:featureMember>";
     var json = null;
     $.ajax({
         'async': false,
-        'url': jsonFile,
+        'url': "capabilities.json",
         'dataType': "json",
         'success': function(data) {
             json = data;
@@ -427,6 +427,7 @@ function resultatSOS() {
     var observableProperty = document.getElementById("observableProperty").value;
     var foi = document.getElementById("foi").value;
     var procedure = document.getElementById("procedure").value;
+    var offering = document.getElementById("offering").value;
     $.ajax({
         url: '../sosAPI.php',
         //url: '../SOS/exResult.json',
@@ -435,7 +436,8 @@ function resultatSOS() {
             request: 'result',
             observableProperty: observableProperty,
             foi: foi,
-            procedure: procedure
+            procedure: procedure,
+            offering: offering
         },
         dataType: 'json',
         success: function(res) {
